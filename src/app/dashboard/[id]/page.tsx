@@ -1,6 +1,6 @@
 import { Aside } from "@/components/aside";
 import { Header } from "@/components/header";
-import { RouterComponent } from "../routes/RouterComponent";
+import { RouterComponent } from "../../routes/router-component";
 
 export default function Schedules() {
     return (
@@ -8,7 +8,7 @@ export default function Schedules() {
             <Header />
             <div className="w-full flex h-full pl-1/5 ">
                 <Aside />
-                <div className="w-4/5 h-full pt-16">
+                <div className="md:w-4/5 w-full h-full overflow-hidden pt-16">
                     <RouterComponent />
                 </div>
             </div>
