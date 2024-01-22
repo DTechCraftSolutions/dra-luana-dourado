@@ -1,4 +1,5 @@
 import { ScheduleCard } from "@/components/schedule-card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
     Select,
     SelectContent,
@@ -6,6 +7,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { NewSchedule } from "@/forms/new-schedule";
 
 import { IoMdAdd } from "react-icons/io";
 
@@ -40,10 +42,20 @@ export function Schedules() {
                         </SelectContent>
                     </Select>
                 </div>
-                <button className="mt-4 md:mt-0 px-4 py-2 flex items-center gap-2 bg-green-600 rounded-full text-white font-semibold">
-                    <IoMdAdd />
-                    Agendar novo
-                </button>
+                <Dialog>
+                    <DialogTrigger className="mt-4 md:mt-0 px-4 py-2 flex items-center gap-2 bg-green-600 rounded-full text-white font-semibold">
+                        <IoMdAdd />
+                        Agendar novo
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle className="mx-auto text-primary">
+                                Novo Agendamento
+                            </DialogTitle>
+                        </DialogHeader>
+                        <NewSchedule />
+                    </DialogContent>
+                </Dialog>
             </div>
             <div className="schedule-cards gap-2 mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
                 {Array.from({ length: 20 }).map((_, index) => (

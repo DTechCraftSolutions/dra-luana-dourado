@@ -25,10 +25,8 @@ export function ScheduleCard() {
                     <FaCheck className="text-primary" />
                     Confirmar
                 </button>
-                <DialogTrigger>
-                    <button className="underline text-xs">
-                        mais informações
-                    </button>
+                <DialogTrigger className="underline text-xs">
+                    Mais informações
                 </DialogTrigger>
                 <DialogContent>
                     <DialogHeader>
