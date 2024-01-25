@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { Schedules }  from "./pages/schedules"
 import { Pending }  from "./pages/pending"
 import { useParams } from "next/navigation";
+import { Patients } from "./pages/patients";
 
 
 
@@ -14,6 +15,8 @@ export function RouterComponent() {
             return <Schedules />
         } else if (params.id === "pending") {
             return <Pending />
+        } else if (params.id === "patients") {
+            return <Patients />
         }
     }
     console.log(params)
