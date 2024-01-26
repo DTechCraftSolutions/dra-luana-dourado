@@ -14,7 +14,7 @@ export function Aside() {
                     <Link href="/dashboard/pending">Pendentes</Link>
                 </li>
                 <li>
-                    Pacientes
+                    <Link href="/dashboard/patients"> Pacientes </Link>
                 </li>
             </ul>
         </aside>
