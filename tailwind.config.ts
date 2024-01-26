@@ -53,8 +53,8 @@ const config = {
           foreground: "hsl(var(--card-foreground))",
         },
         cancel: "#b91c1c",
-        clientCard: "#D9D9D9",
-        clientTextColor: "#333333",
+        patientCard: "#D9D9D9",
+        patientCardText: "#333333",
       },
       borderRadius: {
         lg: "var(--radius)",
