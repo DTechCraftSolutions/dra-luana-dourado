@@ -6,6 +6,7 @@ import { Pending }  from "./pages/pending"
 import { useParams } from "next/navigation";
 import { Patients } from "./pages/patients";
 import { Professionals } from "./pages/professionals";
+import { AvailabilityManagement } from "./pages/availability";
 
 
 
@@ -20,6 +21,8 @@ export function RouterComponent() {
             return <Patients />
         } else if (params.id === "professionals") {
             return <Professionals />
+        } else if (params.id === "availability") {
+            return <AvailabilityManagement />
         }
     }
     console.log(params)

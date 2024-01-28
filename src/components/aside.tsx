@@ -19,6 +19,9 @@ export function Aside() {
                 <li>
                     <Link href="/dashboard/professionals">Profissionais</Link>
                 </li>
+                <li>
+                    <Link href="/dashboard/availability">Disponibilidade</Link>
+                </li>
             </ul>
         </aside>
     )
