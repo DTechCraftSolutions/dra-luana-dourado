@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { details } from "../../details";
 import { RoundedInput } from "@/components/rounded-input";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -23,12 +24,22 @@ export default function Home() {
         <div className="w-full md:w-[80%] md:h-[50%] p-8">
           <form className="flex flex-col gap-3">
             <label htmlFor="email">Email</label>
-            <RoundedInput className="text-black px-4 outline-none" id="email" type="email" />
+            <RoundedInput
+              className="text-black px-4 outline-none"
+              id="email"
+              type="email"
+            />
             <label htmlFor="password">Senha</label>
-            <RoundedInput className="text-black px-4 outline-none" id="password" type="password" />
-            <button className="w-full bg-white h-14 text-primary font-bold shadow-md rounded-full mt-8">
-              Entrar
-            </button>
+            <RoundedInput
+              className="text-black px-4 outline-none"
+              id="password"
+              type="password"
+            />
+            <Link href={"/dashboard/schedules"}>
+              <button className="w-full bg-white h-14 text-primary font-bold shadow-md rounded-full mt-8">
+                Entrar
+              </button>
+            </Link>
           </form>
         </div>
       </div>
