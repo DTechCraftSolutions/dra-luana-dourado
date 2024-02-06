@@ -1,15 +1,9 @@
-import { DialogHeader } from "@/components/ui/dialog";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { useState } from "react";
 import { PatientSearchedCard } from "@/components/patient-searched-card";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import PatientDetailTabs from "@/components/patient-details-tab";
+import { PatientCreate } from "@/components/patient-create";
 
 const patientsSearched: PatientProps[] = [
   {
@@ -100,24 +94,7 @@ export function Patients() {
       </div>
 
       {/* TODO: colocar isso em um componente, não aqui */}
-      <div
-        className="w-full flex mt-4 mb-4"
-        onClick={() => {}}
-      >
-        <Dialog>
-          <DialogTrigger className="mt-4 md:mt-0 px-14 py-2 bg-green-600 rounded-full  text-white font-semibold hover:opacity-90 transition-opacity duration-300">
-            Cadastrar novo
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle className="mx-auto text-primary">
-                Novo Paciente
-              </DialogTitle>
-            </DialogHeader>
-            <div>Eu sou um cadastro de paciente</div>
-          </DialogContent>
-        </Dialog>
-      </div>
+      <PatientCreate />
 
       {selectedPatient ? (
         <div className="w-full flex flex-col gap-2 mt-10">
