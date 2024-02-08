@@ -61,7 +61,7 @@ const patientSchema = z
         message: "Informe um CPF válido",
         path: ["cpf"],
       });
-    } else if (!validatePhoneNumber(data.telefone)) {
+    } else if (data.telefone && !validatePhoneNumber(data.telefone)) {
       ctx.addIssue({
         code: "custom",
         message: "Informe um telefone válido. Ex: (11) 91234-5678",
@@ -69,11 +69,45 @@ const patientSchema = z
       });
     } else if (data.data_nascimento) {
       const dateJustNumbers = removeSpecialChars(data.data_nascimento);
+      const responsibleBirthJustNumbers = removeSpecialChars(
+        data.data_nascimento_responsavel
+      );
+      const responsiblePhoneJustNumbers = removeSpecialChars(
+        data.telefone_responsavel
+      );
+      let isBirthDateResponsibleValid = true;
 
       if (dateJustNumbers.length === 8) {
-        const triggerDateValidation = !isOver18(
-          convertToISOString(data.data_nascimento)
-        );
+        const dateParsedToISOString = convertToISOString(data.data_nascimento);
+
+        if (!dateParsedToISOString) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Data de Nascimento Inválida",
+            path: ["data_nascimento"],
+          });
+          return;
+        }
+
+        const triggerDateValidation = !isOver18(dateParsedToISOString);
+
+        //custom validation for the Data Nascimento Responsavel
+        if (triggerDateValidation) {
+          if (
+            responsibleBirthJustNumbers.length === 8 &&
+            data.data_nascimento_responsavel
+          ) {
+            const responsibleBirthParsedToISOString = convertToISOString(
+              data.data_nascimento_responsavel
+            );
+
+            if (!responsibleBirthParsedToISOString)
+              isBirthDateResponsibleValid = false;
+          } else {
+            isBirthDateResponsibleValid = false;
+          }
+        }
+
         if (triggerDateValidation && !data.nome_responsavel) {
           ctx.addIssue({
             code: "custom",
@@ -86,18 +120,58 @@ const patientSchema = z
             message: "Informe o CPF do Responsável",
             path: ["cpf_responsavel"],
           });
+        } else if (
+          triggerDateValidation &&
+          data.cpf_responsavel &&
+          !validarCpf(data.cpf_responsavel)
+        ) {
+          ctx.addIssue({
+            code: "custom",
+            message: "CPF do Responsável Inválido",
+            path: ["cpf_responsavel"],
+          });
         } else if (triggerDateValidation && !data.rg_responsavel) {
           ctx.addIssue({
             code: "custom",
             message: "Informe o RG do Responsável",
             path: ["rg_responsavel"],
           });
-        } else if (triggerDateValidation && !data.telefone_responsavel) {
+        } else if (
+          (triggerDateValidation && !responsibleBirthJustNumbers) ||
+          !responsibleBirthJustNumbers.length
+        ) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Informe a Data de Nascimento do Responsável",
+            path: ["data_nascimento_responsavel"],
+          });
+        } else if (
+          triggerDateValidation &&
+          data.data_nascimento_responsavel &&
+          !isBirthDateResponsibleValid
+        ) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Data de nascimento Inválida",
+            path: ["data_nascimento_responsavel"],
+          });
+        } else if (
+          (triggerDateValidation && !responsiblePhoneJustNumbers) ||
+          !responsiblePhoneJustNumbers.length
+        ) {
           ctx.addIssue({
             code: "custom",
             message: "Informe o Telefone do Responsável",
             path: ["telefone_responsavel"],
           });
+        } else if (triggerDateValidation && data.telefone_responsavel) {
+          if (!validatePhoneNumber(data.telefone_responsavel)) {
+            ctx.addIssue({
+              code: "custom",
+              message: "Informe um telefone válido. Ex: (11) 91234-5678",
+              path: ["telefone_responsavel"],
+            });
+          }
         }
 
         //TODO: add data nascimento responsavel validation
@@ -114,7 +188,24 @@ const patientSchema = z
  */
 function convertToISOString(dateString: string) {
   const parts = dateString.split("/");
-  const formattedDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+  const [day, month, year] = parts.map(Number);
+
+  if (isNaN(year) || isNaN(month) || isNaN(day)) {
+    return false; // Invalid date format
+  }
+
+  const maxDaysInMonth = new Date(year, month, 0).getDate();
+
+  if (day < 1 || day > maxDaysInMonth) {
+    return false; // Invalid day of the month
+  }
+
+  const formattedDate = new Date(`${year}-${month}-${day}`);
+
+  if (isNaN(formattedDate.getTime())) {
+    return null;
+  }
+
   return formattedDate.toISOString();
 }
 
@@ -123,7 +214,7 @@ function convertToISOString(dateString: string) {
  * @param dateString "ISO 8601 format"
  * @returns true if the date is older than 18 years
  */
-function isOver18(dateString: string) {
+function isOver18(dateString: any) {
   const date = new Date(dateString);
   const today = new Date();
   const eighteenYearsAgo = new Date(
@@ -138,34 +229,42 @@ function isOver18(dateString: string) {
 type PatientSchema = z.infer<typeof patientSchema>;
 
 export function PatientCreate() {
-  const { handleSubmit, formState, control, watch, setValue, reset } =
-    useForm<PatientSchema>({
-      resolver: zodResolver(patientSchema),
-      defaultValues: {
-        sexo: "male",
-        cpf: "",
-        nome: "",
-        rg: "",
-        telefone: "",
-        observacao: "",
-        plano: "",
-        numero_cateirinha: "",
-        cep: "",
-        rua: "",
-        bairro: "",
-        cidade: "",
-        estado: "",
-        numero: "",
-        complemento: "",
-        nome_responsavel: "",
-        cpf_responsavel: "",
-        rg_responsavel: "",
-        data_nascimento_responsavel: "",
-        telefone_responsavel: "",
-        observacao_responsavel: "",
-        data_nascimento: undefined,
-      },
-    });
+  const {
+    handleSubmit,
+    formState,
+    control,
+    watch,
+    setValue,
+    reset,
+    setError,
+    clearErrors,
+  } = useForm<PatientSchema>({
+    resolver: zodResolver(patientSchema),
+    defaultValues: {
+      sexo: "male",
+      cpf: "",
+      nome: "",
+      rg: "",
+      telefone: "",
+      observacao: "",
+      plano: "",
+      numero_cateirinha: "",
+      cep: "",
+      rua: "",
+      bairro: "",
+      cidade: "",
+      estado: "",
+      numero: "",
+      complemento: "",
+      nome_responsavel: "",
+      cpf_responsavel: "",
+      rg_responsavel: "",
+      data_nascimento_responsavel: "",
+      telefone_responsavel: "",
+      observacao_responsavel: "",
+      data_nascimento: '',
+    },
+  });
 
   const [cep, data_nascimento] = watch(["cep", "data_nascimento"]);
 
@@ -217,6 +316,13 @@ export function PatientCreate() {
 
     if (dateJustNumbers.length === 8) {
       const dateParsedToISOString = convertToISOString(data_nascimento);
+
+      if (!dateParsedToISOString) {
+        setError("data_nascimento", { message: "Data inválida" });
+        return;
+      }
+
+      clearErrors("data_nascimento");
 
       if (data_nascimento)
         setDisplayResponsibleFields(!isOver18(dateParsedToISOString));
@@ -401,13 +507,13 @@ export function PatientCreate() {
                   {/* responsible second row */}
                   <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 mt-5">
                     <div className="sm:col-span-4">
-                      {/* TODO: Add date picker */}
                       <Controller
                         name="data_nascimento_responsavel"
                         control={control}
                         render={({ field, formState }) => (
-                          <InputText
-                            label="Data nascimento"
+                          <InputMask
+                            mask="date"
+                            label="Data de Nascimento"
                             {...field}
                             error={
                               formState.errors?.data_nascimento_responsavel
