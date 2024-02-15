@@ -27,6 +27,9 @@ export function Aside() {
                 <li className={path === "availability" ? "text-primary font-medium underline" : ""}>
                     <Link href="/dashboard/availability">Disponibilidade</Link>
                 </li>
+                <li className={path === "procedures" ? "text-primary font-medium underline" : ""}>
+                    <Link href="/dashboard/procedures">Procedimentos</Link>
+                </li>
             </ul>
         </aside>
     )
