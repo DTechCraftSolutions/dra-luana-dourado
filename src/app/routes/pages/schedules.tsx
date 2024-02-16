@@ -1,4 +1,5 @@
 import { ScheduleCard } from "@/components/schedule-card";
+import { DatePickerDemo } from "@/components/ui/date-picker";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
     Select,
@@ -8,24 +9,29 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { NewSchedule } from "@/forms/new-schedule";
+import { format } from "date-fns";
+import { useState } from "react";
+import { ptBR } from "date-fns/locale";
 
 import { IoMdAdd } from "react-icons/io";
 
 export function Schedules() {
+    const [date, setDate] = useState<Date | undefined>(new Date());
+    const formatDate = (date: Date) => format(date, "dd/MM/yyyy");
+    const dataFormatada = format(date || new Date(), 'EEEE', { locale: ptBR });
+    const CapitalizedWeekDay = dataFormatada.charAt(0).toUpperCase() + dataFormatada.slice(1);
     return (
         <div className="mt-2 w-full px-4">
             <h2 className="text-primary font-bold text-xl">Agenda</h2>
-            <div className="w-full flex mt-4">
-                <Select>
-                    <SelectTrigger className="w-full md:w-[180px] bg-primary rounded-full text-white">
-                        <SelectValue placeholder="Data" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="light">21/01/2024</SelectItem>
-                        <SelectItem value="dark">22/01/2024</SelectItem>
-                        <SelectItem value="system">23/01/2024</SelectItem>
-                    </SelectContent>
-                </Select>
+            <div className="w-full flex items-center gap-6 mt-4">
+                <DatePickerDemo setDate={setDate}
+                    date={date} />
+                <h2 className="text-primary font-bold text-xl">
+                    {CapitalizedWeekDay}
+                    <span className="ml-2 font-normal">
+                        {formatDate((date || new Date())) === formatDate(new Date()) ? "(hoje)" : ""}
+                    </span>
+                </h2>
             </div>
             <div className="w-full flex flex-col md:flex-row items-center mt-4 justify-between">
                 <div className="flex flex-col md:flex-row items-center gap-5">
