@@ -37,7 +37,22 @@ const patientsSearched: PatientProps[] = [
     estado: "PE",
     numero: "456",
   },
-  // ... other objects according to the PatientProps interface
+  {
+    nome: "Deyvid",
+    id: "893ace-i9343e",
+    cpf: "123.456.789-00",
+    rg: "1234567",
+    celular: "(11) 91234-5678",
+    idade: 30,
+    sexo: "M",
+    plano: "" /* TODO: Add the correct type for planos */,
+    logradouro: "Rua C",
+    bairro: "Bairro C",
+    cidade: "Cidade C",
+    estado: "Estado C",
+    numero: "789",
+    complemento: "Complemento C",
+  }
 ];
 
 export interface PatientProps {

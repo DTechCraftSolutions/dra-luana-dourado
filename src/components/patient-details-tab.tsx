@@ -1,14 +1,14 @@
 import { PatientProps } from "@/app/routes/pages/patients";
 import { useState } from "react";
+import { BudgetsRender } from "./tab-contents/patients/budgets";
 
 const PatientDetailTabs = ({ patient }: { patient: PatientProps }) => {
   const [activeTab, setActiveTab] = useState("tab1-data");
 
   const TabButton = ({ tabId, label }: { tabId: string; label: string }) => (
     <button
-      className={`font-bold text-primary ${
-        activeTab === tabId ? "border-b border-primary" : ""
-      }`}
+      className={`font-bold text-primary ${activeTab === tabId ? "border-b border-primary" : ""
+        }`}
       onClick={() => setActiveTab(tabId)}
     >
       {label}
@@ -58,7 +58,9 @@ const PatientDetailTabs = ({ patient }: { patient: PatientProps }) => {
           </div>
         }
       />
-      <TabContent tabId="tab2-budget" content="Tab 2 content" />
+      <TabContent tabId="tab2-budget" content={
+        <BudgetsRender />
+      } />
       <TabContent tabId="tab3-treatment" content="Tab 3 content" />
     </div>
   );
