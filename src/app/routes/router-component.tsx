@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 import { Patients } from "./pages/patients";
 import { Professionals } from "./pages/professionals";
 import { AvailabilityManagement } from "./pages/availability";
+import { Procedures } from "./pages/procedures";
 
 
 
@@ -23,6 +24,8 @@ export function RouterComponent() {
             return <Professionals />
         } else if (params.id === "availability") {
             return <AvailabilityManagement />
+        } else if (params.id === "procedures"){
+            return <Procedures />
         }
     }
     console.log(params)
