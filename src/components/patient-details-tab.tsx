@@ -1,6 +1,9 @@
 import { PatientProps } from "@/app/routes/pages/patients";
 import { useState } from "react";
 import { BudgetsRender } from "./tab-contents/patients/budgets";
+import { ArrowLeft } from "lucide-react";
+import { IoArrowBack } from "react-icons/io5";
+import { Treatments } from "./tab-contents/patients/treatments";
 
 const PatientDetailTabs = ({ patient }: { patient: PatientProps }) => {
   const [activeTab, setActiveTab] = useState("tab1-data");
@@ -28,8 +31,11 @@ const PatientDetailTabs = ({ patient }: { patient: PatientProps }) => {
   );
 
   return (
-    <div className="w-full flex flex-col gap-2 mt-4">
-      <h2 className="text-primary font-bold text-xl mb-6">{patient?.nome}</h2>
+    <div className="w-full flex flex-col gap-2">
+      <div className="flex items-center gap-2">
+        <IoArrowBack className="text-primary text-2xl hover:bg-primary hover:rounded-full cursor-pointer hover:duration-500 hover:ease-in-out hover:transform hover:opacity-30 hover:text-white" />
+        <h2 className="text-primary font-bold text-xl ">{patient?.nome}</h2>
+      </div>
       <div className="flex gap-8">
         <TabButton tabId="tab1-data" label="Dados" />
         <TabButton tabId="tab2-budget" label="Orçamento" />
@@ -61,7 +67,9 @@ const PatientDetailTabs = ({ patient }: { patient: PatientProps }) => {
       <TabContent tabId="tab2-budget" content={
         <BudgetsRender />
       } />
-      <TabContent tabId="tab3-treatment" content="Tab 3 content" />
+      <TabContent tabId="tab3-treatment" content={
+        <Treatments />
+      } />
     </div>
   );
 };

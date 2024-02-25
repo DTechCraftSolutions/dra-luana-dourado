@@ -20,6 +20,7 @@ import {
   validatePhoneNumber,
 } from "@/lib/utils";
 import axios from "axios";
+import { IoAdd } from "react-icons/io5";
 
 const patientSchema = z
   .object({
@@ -332,7 +333,8 @@ export function PatientCreate() {
   return (
     <div className="w-full flex mt-4 mb-4" onClick={() => {}}>
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogTrigger className="mt-4 md:mt-0 px-14 py-2 bg-green-600 rounded-full text-white font-semibold hover:opacity-90 transition-opacity duration-300">
+        <DialogTrigger className="mt-4 md:mt-0 px-14 py-2 bg-green-600 rounded-full flex items-center gap-2 text-white font-semibold hover:opacity-90 transition-opacity duration-300">
+         <IoAdd className="w-5 h-5" />
           Cadastrar novo
         </DialogTrigger>
         <DialogContent className="min-w-[80%] max-h-[80vh] overflow-y-auto">

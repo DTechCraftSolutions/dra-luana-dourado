@@ -27,7 +27,7 @@ const patientsSearched: PatientProps[] = [
     id: "893ace-i9342e",
     cpf: "987.654.321-00",
     rg: "7654321",
-    celular: "(11) 98765-4321", 
+    celular: "(11) 98765-4321",
     idade: 25,
     sexo: "F",
     plano: "" /* TODO: Add the correct type for planos */,
@@ -94,25 +94,27 @@ export function Patients() {
     <div className="px-4 mt-2 w-full">
       <h2 className="text-primary font-bold text-xl">Pacientes</h2>
 
-      <div className="flex items-center mt-4">
-        <Input
-          className="w-full sm:w-[240px] rounded-full pr-12"
-          placeholder="Informe o nome"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSearch(search)}
-        />
-        <Search
-          className="relative right-10 cursor-pointer"
-          onClick={() => handleSearch(search)}
-        />
+      <div className="flex items-center justify-between">
+        <div className="flex items-center">
+          <Input
+            className="w-full sm:w-[240px] rounded-full pr-12"
+            placeholder="Informe o nome"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch(search)}
+          />
+          <Search
+            className="relative right-10 cursor-pointer"
+            onClick={() => handleSearch(search)}
+          />
+        </div>
+
+        {/* TODO: colocar isso em um componente, não aqui */}
+        <PatientCreate />
       </div>
 
-      {/* TODO: colocar isso em um componente, não aqui */}
-      <PatientCreate />
-
       {selectedPatient ? (
-        <div className="w-full flex flex-col gap-2 mt-10">
+        <div className="w-full flex flex-col gap-2 mt-5">
           <PatientDetailTabs patient={selectedPatient as PatientProps} />
         </div>
       ) : (
