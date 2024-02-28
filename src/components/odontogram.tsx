@@ -17,7 +17,6 @@ const Dente: React.FC<DenteProps> = ({ numero }) => {
         d: [],
         o: [],
         l: [],
-
     });
 
     const toggleModal = () => {
@@ -54,84 +53,29 @@ const Dente: React.FC<DenteProps> = ({ numero }) => {
                         <form onSubmit={handleSubmit}>
                             <div className="mb-4">
                                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="">Detalhes por faces</label>
-                                <div >
-                                    <div className="flex items-center mb-2 ">
-                                        <p className="bg-primary flex justify-center items-center ml-2 w-6 h-6 rounded-full text-white">
-                                            M
-                                        </p>
-                                        <Select>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Selecione um procedimento" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="procedimento1">Procedimento 1</SelectItem>
-                                                <SelectItem value="procedimento2">Procedimento 2</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="flex items-center mb-2 ">
-                                        <p className="bg-primary flex justify-center items-center ml-2 w-6 h-6 rounded-full text-white">
-                                            D
-                                        </p>
-                                        <Select>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Selecione um procedimento" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="procedimento1">Procedimento 1</SelectItem>
-                                                <SelectItem value="procedimento2">Procedimento 2</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="flex items-center mb-2 ">
-                                        <p className="bg-primary flex justify-center items-center ml-2 w-6 h-6 rounded-full text-white">
-                                            O
-                                        </p>
-                                        <Select>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Selecione um procedimento" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="procedimento1">Procedimento 1</SelectItem>
-                                                <SelectItem value="procedimento2">Procedimento 2</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="flex items-center mb-2 ">
-                                        <p className="bg-primary flex justify-center items-center ml-2 w-6 h-6 rounded-full text-white">
-                                            V
-                                        </p>
-                                        <Select>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Selecione um procedimento" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="procedimento1">Procedimento 1</SelectItem>
-                                                <SelectItem value="procedimento2">Procedimento 2</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="flex items-center mb-2 ">
-                                        <p className="bg-primary flex justify-center items-center ml-2 w-6 h-6 rounded-full text-white">
-                                            L
-                                        </p>
-                                        <Select>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Selecione um procedimento" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="procedimento1">Procedimento 1</SelectItem>
-                                                <SelectItem value="procedimento2">Procedimento 2</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
+                                <div>
+                                    {['M', 'D', 'O', 'V', 'L'].map((face, index) => (
+                                        <div key={index} className="flex items-center mb-2">
+                                            <p className="bg-primary flex justify-center items-center ml-2 w-6 h-6 rounded-full text-white">
+                                                {face}
+                                            </p>
+                                            <Select>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Selecione um procedimento" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value={`procedimento${index + 1}`}>Procedimento {index + 1}</SelectItem>
+                                                    <SelectItem value={`procedimento${index + 2}`}>Procedimento {index + 2}</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
-
                             <div className="w-full flex justify-center items-center">
                                 <button
                                     type="submit"
-                                    className="bg-primary hover:opacity-80 text-white  py-2 px-4 rounded-full focus:outline-none focus:shadow-outline"
+                                    className="bg-primary hover:opacity-80 text-white py-2 px-4 rounded-full focus:outline-none focus:shadow-outline"
                                 >
                                     Adicionar
                                 </button>
@@ -150,12 +94,12 @@ const Dente: React.FC<DenteProps> = ({ numero }) => {
 const Odontograma: React.FC = () => {
     return (
         <div className="flex flex-col items-center">
-            <div className="flex justify-center space-x-4">
+            <div className="flex flex-wrap justify-center space-x-4">
                 {[...Array(16)].map((_, index) => (
                     <Dente key={index} numero={index + 1} />
                 ))}
             </div>
-            <div className="flex justify-center space-x-4">
+            <div className="flex flex-wrap justify-center space-x-4">
                 {[...Array(16)].map((_, index) => (
                     <Dente key={index + 16} numero={32 - index} />
                 ))}
