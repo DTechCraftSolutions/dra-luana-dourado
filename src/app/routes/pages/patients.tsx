@@ -1,83 +1,38 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PatientSearchedCard } from "@/components/patient-searched-card";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import PatientDetailTabs from "@/components/patient-details-tab";
 import { PatientCreate } from "@/components/patient-create";
 
-const patientsSearched: PatientProps[] = [
-  {
-    nome: "Augusto",
-    id: "893ace-i9341",
-    cpf: "123.456.789-00",
-    rg: "1234567",
-    celular: "(11) 91234-5678",
-    idade: 30,
-    sexo: "M",
-    plano: "" /* TODO: Add the correct type for planos */,
-    logradouro: "Rua A",
-    bairro: "Bairro A",
-    cidade: "Cidade A",
-    estado: "Estado A",
-    numero: "123",
-    complemento: "Complemento A",
-  },
-  {
-    nome: "Eu sou um nome grande o suficiente para quebrar o layout",
-    id: "893ace-i9342e",
-    cpf: "987.654.321-00",
-    rg: "7654321",
-    celular: "(11) 98765-4321",
-    idade: 25,
-    sexo: "F",
-    plano: "" /* TODO: Add the correct type for planos */,
-    logradouro: "Rua B",
-    bairro: "Bairro B",
-    cidade: "Limoeiro",
-    estado: "PE",
-    numero: "456",
-  },
-  {
-    nome: "Deyvid",
-    id: "893ace-i9343e",
-    cpf: "123.456.789-00",
-    rg: "1234567",
-    celular: "(11) 91234-5678",
-    idade: 30,
-    sexo: "M",
-    plano: "" /* TODO: Add the correct type for planos */,
-    logradouro: "Rua C",
-    bairro: "Bairro C",
-    cidade: "Cidade C",
-    estado: "Estado C",
-    numero: "789",
-    complemento: "Complemento C",
-  }
-];
-
-export interface PatientProps {
-  nome: string;
+interface PatientProps {
   id: string;
+  birth_date: string;
+  cep: string;
+  city: string;
+  complement: string;
+  neighborhood: string;
+  number: string;
+  road: string;
+  role: string;
+  state: string;
+  telephone: string;
+  card_number: string;
+  comments: string;
   cpf: string;
+  full_name: string;
   rg: string;
-  celular: string;
-  idade: number;
-  sexo: "M" | "F";
-  plano: any; //TODO: type planos
-  logradouro: string;
-  bairro: string;
-  cidade: string;
-  estado: string;
-  numero: string;
-  complemento?: string;
+  sex: string;
 }
 
 export function Patients() {
-  const [patientSearchList, setPatientSearchList] =
-    useState<PatientProps[]>(patientsSearched);
+  const [patientSearchList, setPatientSearchList] = useState<PatientProps[]>(
+    []
+  );
+  const [data, setData] = useState<PatientProps[]>([]);
   const [search, setSearch] = useState("");
   const [selectedPatient, setSelectedPatient] = useState<PatientProps | null>(null); //prettier-ignore
-
+  const [createdPatient, setCreatedPatient] = useState(false);
   //TODO: implement handleSearch function
   async function handleSearch(patientName: string) {
     //TODO: setPatientSearchList(queryResult)
@@ -89,6 +44,28 @@ export function Patients() {
       setSelectedPatient(patient);
     }
   }
+
+  async function getPatients() {
+    try {
+      const response = await fetch("http://localhost:3333/find-all-patient");
+      const data = await response.json();
+      // setData(data.patients);
+    } catch (error) {
+      console.error("Error fetching patients:", error);
+      throw error;
+    }
+  }
+
+  useEffect(() => {
+    if (createdPatient) {
+      getPatients();
+      setCreatedPatient(false);
+    }
+  }, [createdPatient]);
+
+  useEffect(() => {
+    getPatients();
+  }, []);
 
   return (
     <div className="px-4 mt-2 w-full">
@@ -110,7 +87,7 @@ export function Patients() {
         </div>
 
         {/* TODO: colocar isso em um componente, não aqui */}
-        <PatientCreate />
+        <PatientCreate setCreatedPatient={setCreatedPatient} />
       </div>
 
       {selectedPatient ? (
@@ -123,16 +100,20 @@ export function Patients() {
             Selecione o paciente para obter detalhes:
           </h3>
 
-          <div className="mt-4 flex flex-col gap-2">
-            {patientSearchList.map((patient) => (
-              <PatientSearchedCard
-                key={patient.id}
-                name={patient.nome}
-                id={patient.id}
-                handleSelectPatient={handleSelectPatient}
-              />
-            ))}
-          </div>
+          {data.length > 0 ? (
+            <div className="mt-4 flex flex-col gap-2">
+              {data?.map((patient) => (
+                <PatientSearchedCard
+                  key={patient.id}
+                  name={patient.full_name}
+                  id={patient.id}
+                  handleSelectPatient={handleSelectPatient}
+                />
+              ))}
+            </div>
+          ) : (
+            <p className="text-primary mt-4">Nenhum paciente encontrado...</p>
+          )}
         </>
       )}
     </div>
