@@ -5,7 +5,7 @@ import { Search } from "lucide-react";
 import PatientDetailTabs from "@/components/patient-details-tab";
 import { PatientCreate } from "@/components/patient-create";
 
-interface PatientProps {
+export interface PatientProps {
   id: string;
   birth_date: string;
   cep: string;
@@ -23,6 +23,13 @@ interface PatientProps {
   full_name: string;
   rg: string;
   sex: string;
+  //optional
+  responsible_name: string;
+  responsible_cpf: string;
+  responsible_rg: string;
+  birth_date_responsible: string;
+  telphone_responsible: string;
+  comments_responsible: string;
 }
 
 export function Patients() {
@@ -49,7 +56,8 @@ export function Patients() {
     try {
       const response = await fetch("http://localhost:3333/find-all-patient");
       const data = await response.json();
-      // setData(data.patients);
+      setData(data.patients);
+      setPatientSearchList(data.patients);
     } catch (error) {
       console.error("Error fetching patients:", error);
       throw error;

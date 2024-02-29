@@ -10,8 +10,9 @@ const PatientDetailTabs = ({ patient }: { patient: PatientProps }) => {
 
   const TabButton = ({ tabId, label }: { tabId: string; label: string }) => (
     <button
-      className={`font-bold text-primary ${activeTab === tabId ? "border-b border-primary" : ""
-        }`}
+      className={`font-bold text-primary ${
+        activeTab === tabId ? "border-b border-primary" : ""
+      }`}
       onClick={() => setActiveTab(tabId)}
     >
       {label}
@@ -34,7 +35,9 @@ const PatientDetailTabs = ({ patient }: { patient: PatientProps }) => {
     <div className="w-full flex flex-col gap-2">
       <div className="flex items-center gap-2">
         <IoArrowBack className="text-primary text-2xl hover:bg-primary hover:rounded-full cursor-pointer hover:duration-500 hover:ease-in-out hover:transform hover:opacity-30 hover:text-white" />
-        <h2 className="text-primary font-bold text-xl ">{patient?.nome}</h2>
+        <h2 className="text-primary font-bold text-xl ">
+          {patient?.full_name}
+        </h2>
       </div>
       <div className="flex gap-8">
         <TabButton tabId="tab1-data" label="Dados" />
@@ -46,30 +49,33 @@ const PatientDetailTabs = ({ patient }: { patient: PatientProps }) => {
         content={
           <div>
             <div>
-              <PatientDataItem label="Celular" value={patient?.celular} />
+              <PatientDataItem label="Celular" value={patient?.telephone} />
               <PatientDataItem label="Identificador" value={patient?.id} />
               <PatientDataItem label="CPF" value={patient?.cpf} />
               <PatientDataItem label="RG" value={patient?.rg} />
               <PatientDataItem
                 label="Idade"
-                value={patient?.idade?.toString()}
+                value={patient?.birth_date?.toString()}
               />
-              <PatientDataItem label="Sexo" value={patient?.sexo === 'F' ? 'Feminino' : 'Masculino'} />
-              <PatientDataItem label="Plano" value={patient?.plano} />
+              <PatientDataItem
+                label="Sexo"
+                value={patient?.sex === "F" ? "Feminino" : "Masculino"}
+              />
+              <PatientDataItem label="Plano" value={patient?.role} />
               <PatientDataItem
                 label="Endereço"
-                value={`${patient?.logradouro}, ${patient?.numero}, ${patient?.complemento || 'Sem complemento'}, ${patient?.bairro}, ${patient?.cidade}-${patient?.estado}`}
+                value={`${patient?.road}, ${patient?.number}, ${
+                  patient?.complement || "Sem complemento"
+                }, ${patient?.neighborhood}, ${patient?.city}-${
+                  patient?.state
+                }`}
               />
             </div>
           </div>
         }
       />
-      <TabContent tabId="tab2-budget" content={
-        <BudgetsRender />
-      } />
-      <TabContent tabId="tab3-treatment" content={
-        <Treatments />
-      } />
+      <TabContent tabId="tab2-budget" content={<BudgetsRender />} />
+      <TabContent tabId="tab3-treatment" content={<Treatments />} />
     </div>
   );
 };
