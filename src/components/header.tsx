@@ -11,13 +11,36 @@ import {
 } from "@/components/ui/popover";
 import Image from "next/image";
 import Cookies from "js-cookie";
+import { useEffect, useState } from "react";
 
 export function Header() {
+  const [dataProfile, setDataProfile] = useState<any>([]);
   const router = useRouter();
   function handleLogout() {
     Cookies.remove("token");
     router.push("/");
   }
+
+  async function getProfile() {
+    try {
+      const token = Cookies.get("token");
+      const response = await fetch(
+        "http://localhost:3333/profile-professionals",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await response.json();
+      setDataProfile(data.professionals);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  useEffect(() => {
+    getProfile();
+  }, []);
   return (
     <header className="w-full h-16 bg-primary flex fixed text-white justify-between items-center px-8">
       <h1 className="font-bold">Painel de controle</h1>
@@ -38,7 +61,9 @@ export function Header() {
               height={100}
             />
             <p>
-              <span className="font-semibold text-primary mr-1">Usuário</span>
+              <span className="font-semibold text-primary mr-1">
+                {dataProfile?.name}
+              </span>
               Seja Bem vindo &#40;a&#41; ao painel de controle Dra Luana dourado
             </p>
 

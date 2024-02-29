@@ -42,7 +42,27 @@ export function Patients() {
   const [createdPatient, setCreatedPatient] = useState(false);
   //TODO: implement handleSearch function
   async function handleSearch(patientName: string) {
-    //TODO: setPatientSearchList(queryResult)
+    try {
+      const response = await fetch(
+        "http://localhost:3333/find-patient-by-name",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ full_name: patientName }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch patient data");
+      }
+
+      const data = await response.json();
+      setPatientSearchList(data.patients);
+    } catch (error) {
+      console.error("Error handling search:", error);
+    }
   }
 
   async function handleSelectPatient(id: string) {
@@ -89,7 +109,7 @@ export function Patients() {
             onKeyDown={(e) => e.key === "Enter" && handleSearch(search)}
           />
           <Search
-            className="relative right-10 cursor-pointer"
+            className="relative right-10 cursor-pointer  w-[20px] text-zinc-400"
             onClick={() => handleSearch(search)}
           />
         </div>

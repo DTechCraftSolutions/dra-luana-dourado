@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useState } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import { Toaster, toast } from "sonner";
 
 interface DataProps {
   email: string;
@@ -16,11 +17,13 @@ export default function Home() {
     email: "",
     password: "",
   });
+  const [loading, setLoading] = useState(false);
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3333";
   const router = useRouter();
 
   async function handleLogin(data: DataProps, event: React.FormEvent) {
     event.preventDefault();
+    setLoading(true);
     try {
       const response = await fetch(`${apiUrl}/authenticate-professionals`, {
         method: "POST",
@@ -34,18 +37,24 @@ export default function Home() {
       if (token) {
         Cookies.set("token", token);
       }
+      toast.success("Login realizado com sucesso, Seja bem-vindo!");
     } catch (error) {
       console.error(error);
+      toast.error("Erro ao realizar o login");
     } finally {
       setData({
         email: "",
         password: "",
       });
-      router.push("/dashboard/schedules");
+      setTimeout(() => {
+        router.push("/dashboard/schedules");
+        setLoading(false);
+      }, 3000);
     }
   }
   return (
     <main className="w-screen h-screen flex flex-col md:flex-row">
+      <Toaster richColors position="bottom-right" />
       <div className="w-full md:w-[55%] h-[30%] md:h-full flex justify-center items-center overflow-hidden">
         <Image
           className="md:w-[300px] w-[200px]"
@@ -86,6 +95,7 @@ export default function Home() {
             />
             <Link href={"/dashboard/schedules"}>
               <button
+                disabled={loading}
                 onClick={(event) => handleLogin(data, event)}
                 type="submit"
                 className="w-full bg-white h-14 text-primary font-bold 
