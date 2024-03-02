@@ -49,7 +49,7 @@ export default function Home() {
       setTimeout(() => {
         router.push("/dashboard/schedules");
         setLoading(false);
-      }, 3000);
+      }, 1000);
     }
   }
   return (
