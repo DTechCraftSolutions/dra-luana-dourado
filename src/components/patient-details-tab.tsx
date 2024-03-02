@@ -4,6 +4,7 @@ import { BudgetsRender } from "./tab-contents/patients/budgets";
 import { ArrowLeft } from "lucide-react";
 import { IoArrowBack } from "react-icons/io5";
 import { Treatments } from "./tab-contents/patients/treatments";
+import { DocsComponent } from "./tab-contents/patients/docs";
 
 const PatientDetailTabs = ({ patient, setPatient }: { patient: PatientProps, setPatient: any }) => {
   const [activeTab, setActiveTab] = useState("tab1-data");
@@ -43,6 +44,7 @@ const PatientDetailTabs = ({ patient, setPatient }: { patient: PatientProps, set
         <TabButton tabId="tab1-data" label="Dados" />
         <TabButton tabId="tab2-budget" label="Orçamento" />
         <TabButton tabId="tab3-treatment" label="Tratamentos" />
+        <TabButton tabId="tab4-docs" label="Documentos" />
       </div>
       <TabContent
         tabId="tab1-data"
@@ -76,6 +78,7 @@ const PatientDetailTabs = ({ patient, setPatient }: { patient: PatientProps, set
       />
       <TabContent tabId="tab2-budget" content={<BudgetsRender />} />
       <TabContent tabId="tab3-treatment" content={<Treatments />} />
+      <TabContent tabId="tab4-docs" content={<DocsComponent />} />
     </div>
   );
 };
