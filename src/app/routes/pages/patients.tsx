@@ -120,7 +120,7 @@ export function Patients() {
 
       {selectedPatient ? (
         <div className="w-full flex flex-col gap-2 mt-5">
-          <PatientDetailTabs patient={selectedPatient as PatientProps} />
+          <PatientDetailTabs setPatient={setSelectedPatient} patient={selectedPatient as PatientProps} />
         </div>
       ) : (
         <>

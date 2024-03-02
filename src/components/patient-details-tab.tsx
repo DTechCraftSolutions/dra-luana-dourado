@@ -5,7 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { IoArrowBack } from "react-icons/io5";
 import { Treatments } from "./tab-contents/patients/treatments";
 
-const PatientDetailTabs = ({ patient }: { patient: PatientProps }) => {
+const PatientDetailTabs = ({ patient, setPatient }: { patient: PatientProps, setPatient: any }) => {
   const [activeTab, setActiveTab] = useState("tab1-data");
 
   const TabButton = ({ tabId, label }: { tabId: string; label: string }) => (
@@ -34,7 +34,7 @@ const PatientDetailTabs = ({ patient }: { patient: PatientProps }) => {
   return (
     <div className="w-full flex flex-col gap-2">
       <div className="flex items-center gap-2">
-        <IoArrowBack className="text-primary text-2xl hover:bg-primary hover:rounded-full cursor-pointer hover:duration-500 hover:ease-in-out hover:transform hover:opacity-30 hover:text-white" />
+        <IoArrowBack onClick={() => setPatient(null)} className="text-primary text-2xl hover:bg-primary hover:rounded-full cursor-pointer hover:duration-500 hover:ease-in-out hover:transform hover:opacity-30 hover:text-white" />
         <h2 className="text-primary font-bold text-xl ">
           {patient?.full_name}
         </h2>
