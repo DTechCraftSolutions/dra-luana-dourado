@@ -108,19 +108,18 @@ export function Patients() {
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch(search)}
           />
-          <Search
-            className="relative right-10 cursor-pointer  w-[20px] text-zinc-400"
-            onClick={() => handleSearch(search)}
-          />
+          <Search className="relative right-10 cursor-pointer  w-[20px] text-zinc-400" />
         </div>
 
-        {/* TODO: colocar isso em um componente, não aqui */}
         <PatientCreate setCreatedPatient={setCreatedPatient} />
       </div>
 
       {selectedPatient ? (
         <div className="w-full flex flex-col gap-2 mt-5">
-          <PatientDetailTabs setPatient={setSelectedPatient} patient={selectedPatient as PatientProps} />
+          <PatientDetailTabs
+            setPatient={setSelectedPatient}
+            patient={selectedPatient as PatientProps}
+          />
         </div>
       ) : (
         <>
@@ -130,14 +129,18 @@ export function Patients() {
 
           {data.length > 0 ? (
             <div className="mt-4 flex flex-col gap-2">
-              {data?.map((patient) => (
-                <PatientSearchedCard
-                  key={patient.id}
-                  name={patient.full_name}
-                  id={patient.id}
-                  handleSelectPatient={handleSelectPatient}
-                />
-              ))}
+              {data
+                .filter((patient) =>
+                  patient.full_name.toLowerCase().includes(search.toLowerCase())
+                )
+                .map((patient) => (
+                  <PatientSearchedCard
+                    key={patient.id}
+                    name={patient.full_name}
+                    id={patient.id}
+                    handleSelectPatient={handleSelectPatient}
+                  />
+                ))}
             </div>
           ) : (
             <p className="text-primary mt-4">Nenhum paciente encontrado...</p>
