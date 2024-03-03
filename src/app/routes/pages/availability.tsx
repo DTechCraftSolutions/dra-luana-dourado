@@ -23,7 +23,7 @@ interface AvailableProps {
 
 export function AvailabilityManagement() {
   const [availableTimes, setAvailableTimes] = useState<AvailableProps[]>([]);
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<any>([]);
   const [professionalId, setProfessionalId] = useState("");
   const [availability, setAvailability] = useState<Availability>({
     Segunda: [],
@@ -42,6 +42,7 @@ export function AvailabilityManagement() {
       [day]: [...prevAvailability[day], newInterval],
     }));
   };
+
   const handleRemoveInterval = (day: string, index: number) => {
     const updatedAvailability = { ...availability };
     updatedAvailability[day].splice(index, 1);
@@ -107,6 +108,8 @@ export function AvailabilityManagement() {
           body: JSON.stringify({
             availableTimes: data,
           }),
+        }).then(() => {
+          findAllAvailability();
         });
 
         toast.success("Disponibilidade registrada com sucesso");
@@ -118,18 +121,9 @@ export function AvailabilityManagement() {
       console.error(error);
     } finally {
       setData([]);
-      findAllAvailability();
-      setAvailability({
-        Segunda: [],
-        Terça: [],
-        Quarta: [],
-        Quinta: [],
-        Sexta: [],
-        Sábado: [],
-        Domingo: [],
-      });
     }
   }
+
   async function findAllAvailability() {
     try {
       const response = await fetch(
@@ -142,24 +136,53 @@ export function AvailabilityManagement() {
     }
   }
 
+  function handleAvailabilityDates(WeekDay: string) {
+    if (availableTimes.length > 0) {
+      const uniqueTimes: any = [];
+      const seen = new Set();
+
+      availableTimes.forEach((timeSlot) => {
+        if (timeSlot.day_of_week === daysToWeeks[WeekDay]) {
+          const formattedTime = {
+            start:
+              timeSlot.initial_time.slice(0, -2).toString() +
+              timeSlot.initial_time.slice(-2).toString(),
+            end:
+              timeSlot.end_time.slice(0, -2).toString() +
+              timeSlot.end_time.slice(-2).toString(),
+          };
+
+          const timeString = JSON.stringify(formattedTime);
+
+          if (!seen.has(timeString)) {
+            uniqueTimes.push(formattedTime);
+            seen.add(timeString);
+          }
+        }
+      });
+
+      setAvailability((prevAvailability) => ({
+        ...prevAvailability,
+        [WeekDay]: uniqueTimes,
+      }));
+    }
+  }
+
   useEffect(() => {
     getIdProfessional();
+    findAllAvailability();
+  }, []);
+
+  useEffect(() => {
     const data = dateFormat();
     setData(data);
-    findAllAvailability();
   }, [availability]);
 
   useEffect(() => {
-    if (availableTimes.length > 0) {
-      const uniqueTimes = new Set(
-        availableTimes
-          .filter((timeSlot) => timeSlot.day_of_week === "terça-feira")
-          .map((data) => data.initial_time + " - " + data.end_time)
-      );
-      const uniqueTimesArray = Array.from(uniqueTimes);
-
-      console.log("Horários únicos:", uniqueTimesArray);
-    }
+    const weekDays = Object.keys(availability);
+    weekDays.forEach((day) => {
+      handleAvailabilityDates(day);
+    });
   }, [availableTimes]);
 
   return (
