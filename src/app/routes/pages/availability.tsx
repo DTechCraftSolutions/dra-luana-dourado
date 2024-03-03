@@ -12,7 +12,17 @@ interface Availability {
   [day: string]: Interval[];
 }
 
+interface AvailableProps {
+  id: string;
+  day_of_week: string;
+  label: string;
+  professionalId: string;
+  initial_time: string;
+  end_time: string;
+}
+
 export function AvailabilityManagement() {
+  const [availableTimes, setAvailableTimes] = useState<AvailableProps[]>([]);
   const [data, setData] = useState([]);
   const [professionalId, setProfessionalId] = useState("");
   const [availability, setAvailability] = useState<Availability>({
@@ -108,6 +118,7 @@ export function AvailabilityManagement() {
       console.error(error);
     } finally {
       setData([]);
+      findAllAvailability();
       setAvailability({
         Segunda: [],
         Terça: [],
@@ -119,17 +130,42 @@ export function AvailabilityManagement() {
       });
     }
   }
+  async function findAllAvailability() {
+    try {
+      const response = await fetch(
+        "http://localhost:3333/find-all-available-times"
+      );
+      const data = await response.json();
+      setAvailableTimes(data.availableTimes);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   useEffect(() => {
     getIdProfessional();
     const data = dateFormat();
     setData(data);
+    findAllAvailability();
   }, [availability]);
+
+  useEffect(() => {
+    if (availableTimes.length > 0) {
+      const uniqueTimes = new Set(
+        availableTimes
+          .filter((timeSlot) => timeSlot.day_of_week === "terça-feira")
+          .map((data) => data.initial_time + " - " + data.end_time)
+      );
+      const uniqueTimesArray = Array.from(uniqueTimes);
+
+      console.log("Horários únicos:", uniqueTimesArray);
+    }
+  }, [availableTimes]);
 
   return (
     <>
       <div className="absolute">
-        <Toaster richColors position="top-right" />
+        <Toaster richColors position="bottom-right" />
       </div>
       <div className="w-full px-4 mt-2">
         <h2 className="text-primary font-bold text-xl mb-4">
