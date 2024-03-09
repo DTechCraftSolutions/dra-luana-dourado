@@ -48,6 +48,17 @@ export function Schedules() {
                         </SelectContent>
                     </Select>
                 </div>
+                <div>
+                    <Select>
+                        <SelectTrigger className="w-full md:w-[300px] rounded-full">
+                            <SelectValue placeholder="Selecione o profissional" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="light">Dra. Luana</SelectItem>
+                            <SelectItem value="dark">Dr Luiz</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
                 <Dialog>
                     <DialogTrigger className="mt-4 md:mt-0 px-4 py-2 flex items-center gap-2 bg-green-600 rounded-full text-white font-semibold">
                         <IoMdAdd />
