@@ -10,6 +10,7 @@ import {
 import React, { useEffect } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { PatientProps } from "@/app/routes/pages/patients";
+import Autosuggest from "react-autosuggest"
 
 export function NewSchedule() {
   const [steps, setSteps] = React.useState(0);
@@ -18,6 +19,7 @@ export function NewSchedule() {
   const [professional, setProfessional] = React.useState("");
   const [procedure, setProcedure] = React.useState("");
   const [time, setTime] = React.useState("");
+  const [suggestions, setSuggestions] = React.useState<PatientProps[]>([]);
 
   const [dataPatients, setDataPatients] = React.useState<PatientProps[]>([]);
 
@@ -59,6 +61,30 @@ export function NewSchedule() {
     }
   }
 
+  const onInputChange = (
+    event: React.FormEvent,
+    { newValue }: Autosuggest.ChangeEvent
+  ) => {
+    setPacient(newValue);
+  };
+  const onSuggestionSelected = (
+    event: React.FormEvent,
+    { suggestion }: Autosuggest.SuggestionSelectedEventData<PatientProps>
+  ) => {
+    setPacient(suggestion.full_name);
+  };
+  const getSuggestions = (value: string) => {
+    const inputValue = value.trim().toLowerCase();
+    const inputLength = inputValue.length;
+    return inputLength === 0
+      ? []
+      : dataPatients.filter(
+        (patient) =>
+          patient.full_name.toLowerCase().includes(inputValue.toLowerCase())
+      );
+  };
+  console.log(dataPatients)
+
   useEffect(() => {
     getPatients();
   }, []);
@@ -75,12 +101,26 @@ export function NewSchedule() {
         <div>
           <h2 className="font-medium">Preencha os dados abaixo:</h2>
           <label htmlFor="">Paciente</label>
-          <input
-            onChange={(e) => setPacient(e.target.value)}
-            type="text"
-            className="w-full mb-2 h-10 rounded-full border border-primary px-4 outline-none"
+          < Autosuggest
+            suggestions={suggestions}
+            onSuggestionsFetchRequested={({ value }) =>
+              setSuggestions(getSuggestions(value))
+            }
+            onSuggestionsClearRequested={() => setSuggestions([])}
+            getSuggestionValue={(suggestion) => suggestion.full_name}
+            renderSuggestion={(suggestion) => 
+            <div>
+              <div className="bg-white p-2 cursor-pointer hover:text-white hover:bg-primary hover:opacity-60 hover:duration-500 shadow-md">{suggestion.full_name}</div>
+            </div>
+            }
+            inputProps={{
+              className: "w-full h-10 px-4  rounded-full border-[1px] focus:outline-none focus:duration-500 focus:border-primary",
+              placeholder: "Digite o nome do paciente",
+              value: pacient,
+              onChange: onInputChange,
+            }}
+            onSuggestionSelected={onSuggestionSelected}
           />
-
           <div className="flex items-center gap-2">
             <div>
               <label htmlFor="">Profissional</label>
