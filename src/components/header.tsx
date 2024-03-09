@@ -49,8 +49,9 @@ export function Header() {
           <IoMdNotifications />
         </button>
         <Popover>
-          <PopoverTrigger className="flex items-center justify-center">
-            <p>Usuário</p>
+          <PopoverTrigger className="flex items-center gap-2 justify-center">
+            <p>{dataProfile?.name ?? "usuário"}</p>
+
             <IoIosArrowDown />
           </PopoverTrigger>
           <PopoverContent className=" flex flex-col gap-4">
