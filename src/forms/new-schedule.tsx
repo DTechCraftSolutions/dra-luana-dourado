@@ -10,8 +10,14 @@ import {
 import React, { useEffect } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { PatientProps } from "@/app/routes/pages/patients";
-import Autosuggest from "react-autosuggest"
+import Autosuggest from "react-autosuggest";
 
+interface ProfessionalProps {
+  name: string;
+  email: string;
+  office: string;
+  CRO: string;
+}
 export function NewSchedule() {
   const [steps, setSteps] = React.useState(0);
   const [date, setDate] = React.useState<Date>();
@@ -22,6 +28,9 @@ export function NewSchedule() {
   const [suggestions, setSuggestions] = React.useState<PatientProps[]>([]);
 
   const [dataPatients, setDataPatients] = React.useState<PatientProps[]>([]);
+  const [dataProfessionals, setDataProfessionals] = React.useState<
+    ProfessionalProps[]
+  >([]);
 
   function disableButtonNext() {
     if (!date && steps === 0) {
@@ -61,6 +70,18 @@ export function NewSchedule() {
     }
   }
 
+  async function getProfessionals() {
+    try {
+      const response = await fetch(
+        "http://localhost:3333/find-all-professionals"
+      );
+      const data = await response.json();
+      setDataProfessionals(data.professionals);
+    } catch (error) {
+      console.error("Error fetching professionals:", error);
+    }
+  }
+
   const onInputChange = (
     event: React.FormEvent,
     { newValue }: Autosuggest.ChangeEvent
@@ -78,15 +99,14 @@ export function NewSchedule() {
     const inputLength = inputValue.length;
     return inputLength === 0
       ? []
-      : dataPatients.filter(
-        (patient) =>
+      : dataPatients.filter((patient) =>
           patient.full_name.toLowerCase().includes(inputValue.toLowerCase())
-      );
+        );
   };
-  console.log(dataPatients)
 
   useEffect(() => {
     getPatients();
+    getProfessionals();
   }, []);
 
   return (
@@ -101,20 +121,23 @@ export function NewSchedule() {
         <div>
           <h2 className="font-medium">Preencha os dados abaixo:</h2>
           <label htmlFor="">Paciente</label>
-          < Autosuggest
+          <Autosuggest
             suggestions={suggestions}
             onSuggestionsFetchRequested={({ value }) =>
               setSuggestions(getSuggestions(value))
             }
             onSuggestionsClearRequested={() => setSuggestions([])}
             getSuggestionValue={(suggestion) => suggestion.full_name}
-            renderSuggestion={(suggestion) => 
-            <div>
-              <div className="bg-white p-2 cursor-pointer hover:text-white hover:bg-primary hover:opacity-60 hover:duration-500 shadow-md">{suggestion.full_name}</div>
-            </div>
-            }
+            renderSuggestion={(suggestion) => (
+              <div>
+                <div className="bg-white p-2 cursor-pointer hover:text-white hover:bg-primary hover:opacity-60 hover:duration-500 shadow-md">
+                  {suggestion.full_name}
+                </div>
+              </div>
+            )}
             inputProps={{
-              className: "w-full h-10 px-4  rounded-full border-[1px] focus:outline-none focus:duration-500 focus:border-primary",
+              className:
+                "w-full h-10 px-4  rounded-full border-[1px] focus:outline-none focus:duration-500 focus:border-primary",
               placeholder: "Digite o nome do paciente",
               value: pacient,
               onChange: onInputChange,
@@ -129,7 +152,14 @@ export function NewSchedule() {
                   <SelectValue placeholder="Escolha" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="light">Dra. Luana</SelectItem>
+                  {dataProfessionals.map((professional) => (
+                    <SelectItem
+                      key={professional.CRO}
+                      value={professional.name}
+                    >
+                      {professional.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
