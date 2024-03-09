@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { IoAdd, IoClose } from "react-icons/io5";
 import { Toaster, toast } from "sonner";
 import Cookies from "js-cookie";
+import { weeksToDays } from "date-fns";
 
 interface Interval {
   start: string;
@@ -77,6 +78,32 @@ export function AvailabilityManagement() {
     return date;
   };
 
+  async function removeAvailability(day: string, index: number) {
+    try {
+      await fetch("http://localhost:3333/delete-available-times", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          day_of_week: daysToWeeks[day],
+          initial_time: availableTimes.filter(
+            (item) => item.day_of_week === daysToWeeks[day]
+          )[index].initial_time,
+          end_time: availableTimes.filter(
+            (item) => item.day_of_week === daysToWeeks[day]
+          )[index].end_time,
+        }),
+      });
+      toast.success("Disponibilidade removida com sucesso");
+    } catch (error) {
+      console.error(error);
+      toast.error("Erro ao remover disponibilidade");
+    } finally {
+      handleRemoveInterval(day, index);
+      findAllAvailability();
+    }
+  }
   async function getIdProfessional() {
     try {
       const response = await fetch(
@@ -242,7 +269,7 @@ export function AvailabilityManagement() {
                         className="border border-gray-300 rounded-full p-2 px-4  focus:outline-none focus:border-primary"
                       />
                       <button
-                        onClick={() => handleRemoveInterval(day, intervalIndex)}
+                        onClick={() => removeAvailability(day, intervalIndex)}
                         className="text-red-500"
                         aria-label="Remover Intervalo"
                       >
