@@ -17,8 +17,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { set } from "date-fns";
 import { useEffect, useState } from "react";
+import { FaEdit } from "react-icons/fa";
+import { FaCheck } from "react-icons/fa6";
 import { IoMdAdd } from "react-icons/io";
+import { IoArrowBack, IoClose } from "react-icons/io5";
 import { Toaster, toast } from "sonner";
 
 interface ProfessionalProps {
@@ -34,6 +39,14 @@ export function Professionals() {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [professionals, setProfessionals] = useState<ProfessionalProps[]>([]);
+  const [selectedProfessional, setSelectedProfessional] = useState<ProfessionalProps | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [editingProfessionalCredentials, setEditingProfessionalCredentials] = useState<ProfessionalProps>({
+    name: "",
+    email: "",
+    office: "",
+    CRO: "",
+  });
 
   async function registerProfessional() {
     try {
@@ -162,20 +175,139 @@ export function Professionals() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <h2 className="text-primary text-xl mt-4">Profissionais cadastrados</h2>
-      <p className="mt-4">Selecione um para mais detalhes</p>
-      <div className="flex flex-col gap-2 mt-4">
-        {professionals &&
-          professionals.map((professional, index) => (
-            <RegisteredProfessionals
-              key={index}
-              name={professional.name}
-              job={
-                professional.office === "DENTIST" ? "Dentista" : "Secretaria"
-              }
-            />
-          ))}
-      </div>
+      {
+        !selectedProfessional && (
+          <>
+            <h2 className="text-primary text-xl mt-4">Profissionais cadastrados</h2>
+            <p className="mt-4">Selecione um para mais detalhes</p>
+            <div className="flex flex-col gap-2 mt-4">
+              {professionals &&
+                professionals.map((professional, index) => (
+                  <button onClick={() => setSelectedProfessional(professional)}>
+                    <RegisteredProfessionals
+                      key={index}
+                      name={professional.name}
+                      job={
+                        professional.office === "DENTIST" ? "Dentista" : "Secretaria"
+                      } />
+                  </button>
+                ))}
+            </div>
+          </>
+        )
+      }
+      {
+        selectedProfessional && (
+          <div>
+            <div className="flex items-center mt-4 gap-2">
+              <IoArrowBack onClick={() => {
+                setSelectedProfessional(null)
+                setEditing(false)
+              }} className="text-primary text-2xl p-1 hover:bg-primary hover:rounded-full cursor-pointer hover:duration-500 hover:ease-in-out hover:transform hover:opacity-30 hover:text-white" />
+              <h2 className="text-primary text-lg m font-semibold">
+                {selectedProfessional.name}
+              </h2>
+            </div>
+            <Table>
+              <TableCaption>Informações do profissional</TableCaption>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[100px]">Nome</TableHead>
+                  <TableHead>Profissão</TableHead>
+                  <TableHead>CRO</TableHead>
+                  <TableHead className="text-right pr-40">Email</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {
+                  !editing && (
+                    <TableRow>
+                      <TableCell className="">{selectedProfessional.name}</TableCell>
+                      <TableCell>{selectedProfessional.office === "DENTIST" ? "Dentista" : "Secretaria"}</TableCell>
+                      <TableCell>{selectedProfessional.CRO || "Não consta"}</TableCell>
+                      <TableCell className="text-right ">{selectedProfessional.email}</TableCell>
+                      <TableCell className="flex justify-end">
+                        <button onClick={() => {
+                          setEditing(true)
+                          setEditingProfessionalCredentials({
+                            name: selectedProfessional.name,
+                            office: selectedProfessional.office,
+                            CRO: selectedProfessional.CRO,
+                            email: selectedProfessional.email
+                          })
+                        }} className="bg-primary px-5 flex items-center  text-white rounded-full py-1 jsutify-center gap-2 hover:opacity-80 hover:duration-1000 hover:ease-out">
+                          <FaEdit />
+                          Editar
+                        </button>
+                      </TableCell>
+                    </TableRow>
+                  )
+                }
+                {
+                  editing && (
+                    <TableRow>
+                      <TableCell className="">
+                        <input type="text"
+                          onChange={(e) => setEditingProfessionalCredentials({ ...editingProfessionalCredentials, name: e.target.value })}
+                          value={editingProfessionalCredentials.name}
+                          className="w-56 h-10 rounded-full px-4 border border-primary" />
+                      </TableCell>
+                      <TableCell>
+                        <Select
+                          value={editingProfessionalCredentials.office}
+                          onValueChange={(e) => setEditingProfessionalCredentials({ ...editingProfessionalCredentials, office: e })}>
+                          <SelectTrigger
+                            className="w-56 h-10 rounded-full px-4 border border-primary"
+                          >
+                            <SelectValue placeholder={editingProfessionalCredentials.office} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="SECRETARY">Secretaria</SelectItem>
+                            <SelectItem value="DENTIST">Dentista</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </TableCell>
+                      <TableCell>
+                        {
+                          editingProfessionalCredentials.office === "DENTIST" ? (
+                            <input type="text" onChange={(e) => setEditingProfessionalCredentials({ ...editingProfessionalCredentials, CRO: e.target.value })}
+                              value={editingProfessionalCredentials.CRO}
+                              className="w-56 h-10 rounded-full px-4 border border-primary" />
+
+                          ) :
+                            (
+                              "Não consta"
+                            )
+                        }
+                      </TableCell>
+                      <TableCell className="text-right ">
+                        <input type="text" 
+                          onChange={(e) => setEditingProfessionalCredentials({ ...editingProfessionalCredentials, email: e.target.value })}
+                          value={editingProfessionalCredentials.email}
+                          className="w-56 h-10 rounded-full px-4 border border-primary"
+                        />
+                      </TableCell>
+                      <TableCell className="flex justify-end">
+                      <button onClick={() => {
+                          setEditing(false)
+                        }} className="bg-zinc-300 px-5 mr-2  flex items-center  text-primary rounded-full py-2 jsutify-center gap-2 hover:opacity-80 hover:duration-1000 hover:ease-out">
+                          <IoClose />
+                        </button>
+                        <button onClick={() => {
+                          setEditing(false)
+                        }} className="bg-primary px-5  flex items-center  text-white rounded-full py-2 jsutify-center gap-2 hover:opacity-80 hover:duration-1000 hover:ease-out">
+                          <FaCheck />
+                        </button>
+
+                      </TableCell>
+                    </TableRow>
+                  )
+                }
+              </TableBody>
+            </Table>
+          </div>
+        )
+      }
     </div>
   );
 }
