@@ -1,5 +1,4 @@
 import { DatePickerDemo } from "@/components/ui/date-picker";
-import { Dialog } from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -18,6 +17,25 @@ interface ProfessionalProps {
   office: string;
   CRO: string;
 }
+interface ProcedureProps {
+  id: string;
+  name: string;
+  description: string;
+  recurrence: string;
+  price: number;
+  professionalId: string;
+  duration: string;
+  color: string;
+}
+
+interface AvailableProps {
+  id: string;
+  day_of_week: string;
+  label: string;
+  professionalId: string;
+  initial_time: string;
+  end_time: string;
+}
 export function NewSchedule() {
   const [steps, setSteps] = React.useState(0);
   const [date, setDate] = React.useState<Date>();
@@ -31,6 +49,12 @@ export function NewSchedule() {
   const [dataProfessionals, setDataProfessionals] = React.useState<
     ProfessionalProps[]
   >([]);
+  const [dataProcedures, setDataProcedures] = React.useState<ProcedureProps[]>(
+    []
+  );
+  const [dataAvailables, setDataAvailables] = React.useState<AvailableProps[]>(
+    []
+  );
 
   function disableButtonNext() {
     if (!date && steps === 0) {
@@ -82,6 +106,28 @@ export function NewSchedule() {
     }
   }
 
+  async function getProcedures() {
+    try {
+      const response = await fetch("http://localhost:3333/find-all-procedures");
+      const data = await response.json();
+      setDataProcedures(data.procedures);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function findAllAvailability() {
+    try {
+      const response = await fetch(
+        "http://localhost:3333/find-all-available-times"
+      );
+      const data = await response.json();
+      setDataAvailables(data.availableTimes);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   const onInputChange = (
     event: React.FormEvent,
     { newValue }: Autosuggest.ChangeEvent
@@ -107,6 +153,8 @@ export function NewSchedule() {
   useEffect(() => {
     getPatients();
     getProfessionals();
+    getProcedures();
+    findAllAvailability();
   }, []);
 
   return (
@@ -170,10 +218,11 @@ export function NewSchedule() {
                   <SelectValue placeholder="Escolha" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Manutencao">Manutenção</SelectItem>
-                  <SelectItem value="restauracao">Restauração</SelectItem>
-                  <SelectItem value="clareamento">Clareamento</SelectItem>
-                  <SelectItem value="extracao">Extração</SelectItem>
+                  {dataProcedures.map((procedure) => (
+                    <SelectItem key={procedure.id} value={procedure.name}>
+                      {procedure.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -188,10 +237,11 @@ export function NewSchedule() {
               <SelectValue placeholder="Escolha" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="10:30">10:30</SelectItem>
-              <SelectItem value="15:30">15:30</SelectItem>
-              <SelectItem value="16:00">16:00</SelectItem>
-              <SelectItem value="17:00">17:00</SelectItem>
+              {dataAvailables.map((available) => (
+                <SelectItem key={available.id} value={available.label}>
+                  {available.label} - {available.day_of_week}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
