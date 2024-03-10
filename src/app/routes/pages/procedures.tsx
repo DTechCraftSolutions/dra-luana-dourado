@@ -279,17 +279,23 @@ export function Procedures() {
         </DialogContent>
       </Dialog>
       <div className="grid grid-cols-4 mt-4 w-full">
-        {procedures.map((procedure) => (
-          <ProcedureCard
-            key={procedure.id}
-            procedure={procedure.name}
-            color={procedure.color}
-            getNameProfessional={getNameProfessional}
-            price={procedure.price}
-            professionalId={procedure.professionalId}
-            time={procedure.duration}
-          />
-        ))}
+        {procedures.length > 0 ? (
+          procedures.map((procedure) => (
+            <ProcedureCard
+              key={procedure.id}
+              procedure={procedure.name}
+              color={procedure.color}
+              getNameProfessional={getNameProfessional}
+              price={procedure.price}
+              professionalId={procedure.professionalId}
+              time={procedure.duration}
+            />
+          ))
+        ) : (
+          <p className="text-primary">
+            Nenhum procedimento cadastrado mo momento...
+          </p>
+        )}
       </div>
     </div>
   );
