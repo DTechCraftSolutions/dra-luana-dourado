@@ -17,13 +17,14 @@ import {
 interface DatePickerProps {
   date?: Date
   setDate: React.Dispatch<React.SetStateAction<Date | undefined>>
+  fromDate?: Date
 }
 
-export function DatePickerDemo({ date, setDate }: DatePickerProps) {
-
+export function DatePickerDemo({ date, setDate, fromDate }: DatePickerProps) {
+  const [openPopover, setOpenPopover] = React.useState(false)
   return (
-    <Popover>
-      <PopoverTrigger asChild>
+    <Popover open={openPopover} onOpenChange={setOpenPopover}>
+      <PopoverTrigger  asChild>
         <Button
           variant={"outline"}
           className={cn(
@@ -37,10 +38,14 @@ export function DatePickerDemo({ date, setDate }: DatePickerProps) {
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
         <Calendar
+          fromDate={fromDate}
           locale={ptBR}
           mode="single"
           selected={date}
-          onSelect={setDate}
+          onSelect={(date) => {
+            setDate(date)
+            setOpenPopover(false)
+          }}
           initialFocus
         />
       </PopoverContent>

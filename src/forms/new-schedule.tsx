@@ -10,6 +10,7 @@ import React, { useEffect } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { PatientProps } from "@/app/routes/pages/patients";
 import Autosuggest from "react-autosuggest";
+import { isBefore } from "date-fns";
 
 interface ProfessionalProps {
   name: string;
@@ -36,7 +37,9 @@ interface AvailableProps {
   initial_time: string;
   end_time: string;
 }
-export function NewSchedule() {
+export function NewSchedule({openModal, setOpenModal}: {
+  openModal: boolean;
+  setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;}) {
   const [steps, setSteps] = React.useState(0);
   const [date, setDate] = React.useState<Date>();
   const [pacient, setPacient] = React.useState("");
@@ -93,7 +96,6 @@ export function NewSchedule() {
       throw error;
     }
   }
-
   async function getProfessionals() {
     try {
       const response = await fetch(
@@ -162,7 +164,7 @@ export function NewSchedule() {
       {steps === 0 && (
         <div>
           <h2 className="mb-2">Selecione uma data para continuar</h2>
-          <DatePickerDemo date={date} setDate={setDate} />
+          <DatePickerDemo fromDate={new Date()}  date={date} setDate={setDate} />
         </div>
       )}
       {steps === 1 && (
@@ -256,7 +258,13 @@ export function NewSchedule() {
           </button>
         )}
         <button
-          onClick={nextStep}
+          onClick={() => {
+            if (steps === 2) {
+              setOpenModal(false)
+              return
+            }
+            nextStep();
+          }}
           disabled={disableButtonNext()}
           className="px-4 py-1 mx-auto  text-white bg-primary font-medium shadow-md rounded-full mt-8"
         >

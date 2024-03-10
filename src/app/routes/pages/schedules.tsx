@@ -30,6 +30,7 @@ interface ProfessionalProps {
 export function Schedules() {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [professionals, setProfessionals] = useState<ProfessionalProps[]>([]);
+  const [openModal, setOpenModal] = useState(false);
 
   const formatDate = (date: Date) => format(date, "dd/MM/yyyy");
   const dataFormatada = format(date || new Date(), "EEEE", { locale: ptBR });
@@ -95,7 +96,7 @@ export function Schedules() {
             </SelectContent>
           </Select>
         </div>
-        <Dialog>
+        <Dialog open={openModal} onOpenChange={setOpenModal}>
           <DialogTrigger className="mt-4 md:mt-0 px-4 py-2 flex items-center gap-2 bg-green-600 rounded-full text-white font-semibold">
             <IoMdAdd />
             Agendar novo
@@ -106,7 +107,7 @@ export function Schedules() {
                 Novo Agendamento
               </DialogTitle>
             </DialogHeader>
-            <NewSchedule />
+            <NewSchedule setOpenModal={setOpenModal} openModal={openModal} />
           </DialogContent>
         </Dialog>
       </div>
