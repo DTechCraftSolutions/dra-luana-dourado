@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { IoAdd, IoClose } from "react-icons/io5";
 import { Toaster, toast } from "sonner";
 import Cookies from "js-cookie";
-import { weeksToDays } from "date-fns";
+import { useRouter } from "next/navigation";
 
 interface Interval {
   start: string;
@@ -23,6 +23,14 @@ interface AvailableProps {
 }
 
 export function AvailabilityManagement() {
+  const router = useRouter();
+  useEffect(() => {
+    const token = Cookies.get("token");
+    if (!token) {
+      router.push("/login");
+    }
+  }, []);
+
   const [availableTimes, setAvailableTimes] = useState<AvailableProps[]>([]);
   const [data, setData] = useState<any>([]);
   const [professionalId, setProfessionalId] = useState("");

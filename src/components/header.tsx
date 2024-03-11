@@ -18,7 +18,7 @@ export function Header() {
   const router = useRouter();
   function handleLogout() {
     Cookies.remove("token");
-    router.push("/");
+    router.push("/login");
   }
 
   async function getProfile() {

@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import PatientDetailTabs from "@/components/patient-details-tab";
 import { PatientCreate } from "@/components/patient-create";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 export interface PatientProps {
   id: string;
@@ -33,6 +35,14 @@ export interface PatientProps {
 }
 
 export function Patients() {
+  const router = useRouter();
+  useEffect(() => {
+    const token = Cookies.get("token");
+    if (!token) {
+      router.push("/login");
+    }
+  }, []);
+
   const [patientSearchList, setPatientSearchList] = useState<PatientProps[]>(
     []
   );

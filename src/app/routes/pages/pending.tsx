@@ -1,3 +1,4 @@
+"use client";
 import { FinishedSchedule } from "@/components/finished-schedule";
 import { PendingCard } from "@/components/pending-card";
 import {
@@ -8,8 +9,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Search } from "lucide-react";
-
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import Cookies from "js-cookie";
 export function Pending() {
+  const router = useRouter();
+  useEffect(() => {
+    const token = Cookies.get("token");
+    if (!token) {
+      router.push("/login");
+    }
+  }, []);
   return (
     <div className="px-4 mt-2 w-full">
       <h2 className="text-primary font-bold text-xl">Área de inteligência</h2>

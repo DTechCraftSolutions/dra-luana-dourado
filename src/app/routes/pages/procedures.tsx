@@ -23,6 +23,8 @@ import { SketchPicker } from "react-color";
 import { useEffect, useState } from "react";
 import { Toaster, toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 interface ProfessionalProps {
   id: string;
@@ -44,6 +46,14 @@ interface ProcedureProps {
 }
 
 export function Procedures() {
+  const router = useRouter();
+  useEffect(() => {
+    const token = Cookies.get("token");
+    if (!token) {
+      router.push("/login");
+    }
+  }, []);
+
   const [color, setColor] = useState("");
   const [currentProcedure, setCurrentProcedure] = useState("");
   const [timeToRegister, setTimeToRegister] = useState("");
