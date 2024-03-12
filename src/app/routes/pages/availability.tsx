@@ -87,6 +87,21 @@ export function AvailabilityManagement() {
   };
 
   async function removeAvailability(day: string, index: number) {
+    const initialTimesSet = new Set(
+      availableTimes
+        .filter((item) => item.day_of_week === daysToWeeks[day])
+        .map((item) => item.initial_time)
+    );
+
+    const endTimesSet = new Set(
+      availableTimes
+        .filter((item) => item.day_of_week === daysToWeeks[day])
+        .map((item) => item.end_time)
+    );
+
+    const initialTimes = Array.from(initialTimesSet);
+    const endTimes = Array.from(endTimesSet);
+
     try {
       await fetch("http://localhost:3333/delete-available-times", {
         method: "DELETE",
@@ -95,14 +110,11 @@ export function AvailabilityManagement() {
         },
         body: JSON.stringify({
           day_of_week: daysToWeeks[day],
-          initial_time: availableTimes.filter(
-            (item) => item.day_of_week === daysToWeeks[day]
-          )[index].initial_time,
-          end_time: availableTimes.filter(
-            (item) => item.day_of_week === daysToWeeks[day]
-          )[index].end_time,
+          initial_time: initialTimes[index],
+          end_time: endTimes[index],
         }),
       });
+
       toast.success("Disponibilidade removida com sucesso");
     } catch (error) {
       console.error(error);
