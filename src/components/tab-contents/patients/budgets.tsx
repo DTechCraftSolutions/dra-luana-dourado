@@ -10,7 +10,8 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { useEffect, useState } from "react"
+import { set } from "date-fns"
+import { use, useEffect, useState } from "react"
 import { FaEdit } from "react-icons/fa"
 import { FaCheck } from "react-icons/fa6"
 import { IoAdd, IoClose, IoTrash } from "react-icons/io5"
@@ -25,6 +26,16 @@ export function BudgetsRender() {
     const [totalValue, setTotalValue] = useState(0);
     const [selectedDiscountMethod, setSelectedDiscountMethod] = useState("1");
     const [discountValue, setDiscountValue] = useState(0);
+    const [discountedValue, setDiscountedValue] = useState(0);
+
+    const handleDiscountChange = () => {
+        if (selectedDiscountMethod === "1") {
+            setDiscountedValue(totalValue - discountValue);
+        }
+        if (selectedDiscountMethod === "2") {
+            setDiscountedValue(totalValue - totalValue * (discountValue / 100));
+        }
+    }
     const addTreatmentToList = (treatmentId: string) => {
         const treatment = treatments.find((treatment) => treatment.id === treatmentId);
         if (treatment) {
@@ -38,14 +49,10 @@ export function BudgetsRender() {
         }
         setSelectedIdTreatment("1");
     }
-    const handleDiscountChange = () => {
-        if(selectedDiscountMethod === "1"){
-            setTotalValue(totalValue - discountValue);
-        }
-        if(selectedDiscountMethod === "2"){
-            setTotalValue(totalValue - totalValue * (discountValue / 100));
-        }
-    }
+
+    useEffect(() => {
+        handleDiscountChange();
+    }, [selectedDiscountMethod, discountValue, totalValue])
 
     const removeTreatmentFromList = (treatmentId: string) => {
         setAddedTreatments(addedTreatments.filter((treatment) => treatment.id !== treatmentId));
@@ -121,32 +128,36 @@ export function BudgetsRender() {
 
                             )}
                         </div>
-                        <div className="flex items-center justify-between gap-2">
-                            <div className="flex flex-col">
-                                <label htmlFor="">Desconto</label>
-                                <input value={discountValue} onChange={(e) => setDiscountValue(Number(e.target.value))} type="number" className="w-[150px] px-3 rounded-full border-zinc-300 focus:border-1  focus:shadow-none border outline-none focus:duration-500 focus:border-primary h-10" />
-                            </div>
-                            <RadioGroup value={selectedDiscountMethod} onValueChange={setSelectedDiscountMethod}  className="flex mt-4 mr-10 items-center gap-6">
-                                <div className="flex items-center gap-2">
-                                    <p className="text-primary">
-                                        R$
-                                    </p>
-                                    <RadioGroupItem value="1" />
+                        {
+                            addedTreatments.length && (
+                                <div className="flex items-center justify-between gap-2">
+                                    <div className="flex flex-col">
+                                        <label htmlFor="">Desconto</label>
+                                        <input value={discountValue} onChange={(e) => setDiscountValue(Number(e.target.value))} type="number" className="w-[150px] px-3 rounded-full border-zinc-300 focus:border-1  focus:shadow-none border outline-none focus:duration-500 focus:border-primary h-10" />
+                                    </div>
+                                    <RadioGroup value={selectedDiscountMethod} onValueChange={setSelectedDiscountMethod} className="flex mt-4 mr-10 items-center gap-6">
+                                        <div className="flex items-center gap-2">
+                                            <p className="text-primary">
+                                                R$
+                                            </p>
+                                            <RadioGroupItem value="1" />
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <p className="text-primary">
+                                                %
+                                            </p>
+                                            <RadioGroupItem value="2" />
+                                        </div>
+                                    </RadioGroup>
+                                    <div className="mt-4 text-primary">
+                                        <p>
+                                            <span>Total: </span>
+                                            R$ {discountedValue}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <p className="text-primary">
-                                        %
-                                    </p>
-                                    <RadioGroupItem value="2" />
-                                </div>
-                            </RadioGroup>
-                            <div className="mt-4 text-primary">
-                                <p>
-                                    <span>Total: </span>
-                                    R$ {totalValue}
-                                </p>
-                            </div>
-                        </div>
+                            ) || null
+                        }
                         <div className="flex w-full justify-center items-center gap-4">
                             <DialogClose className="bg-zinc-300 px-10 py-2 rounded-full text-primary font-semibold hover:opacity-80 hover:duration-1000 hover:ease-out">
                                 Cancelar
