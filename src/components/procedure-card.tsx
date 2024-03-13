@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { IoPencil, IoTrash } from "react-icons/io5";
 
 interface ProcedureCardProps {
   procedure: string;
@@ -6,6 +7,8 @@ interface ProcedureCardProps {
   professionalId: string;
   color: string;
   price: number;
+  onEditProcedure: () => void;
+  onDeleteProcedure: () => void;
   getNameProfessional: (id: string) => Promise<string>;
 }
 
@@ -16,6 +19,8 @@ export function ProcedureCard({
   color,
   price,
   getNameProfessional,
+  onEditProcedure,
+  onDeleteProcedure,
 }: ProcedureCardProps) {
   const [professionalName, setProfessionalName] = useState<string | null>(null);
 
@@ -41,18 +46,30 @@ export function ProcedureCard({
           className="w-20 h-5 rounded-t-lg rounded-tl-none"
         />
       </div>
-      <p>
-        <span className="font-semibold mr-1">Profissional:</span>
-        {professionalName}
-      </p>
-      <p>
-        <span className="font-semibold mr-1">Tempo estimado:</span>
-        {time} min
-      </p>
-      <p>
-        <span className="font-semibold mr-1">Preço:</span> R$
-        {String(price.toFixed(2)).replace(".", ",")}
-      </p>
+      <div className="flex justify-between items-end">
+        <div>
+          <p>
+            <span className="font-semibold mr-1">Profissional:</span>
+            {professionalName}
+          </p>
+          <p>
+            <span className="font-semibold mr-1">Tempo estimado:</span>
+            {time} min
+          </p>
+          <p>
+            <span className="font-semibold mr-1">Preço:</span> R$
+            {String(price.toFixed(2)).replace(".", ",")}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button onClick={onEditProcedure} className="flex items-center gap-2 text-primary hover:bg-primary hover:text-white hover:duration-500 hover:ease-in-out hover:transform hover:rounded">
+            <IoPencil />
+          </button>
+          <button onClick={onDeleteProcedure} className="flex items-center gap-2 text-red-500 hover:bg-red-500 hover:text-white hover:duration-500 hover:ease-in-out hover:transform hover:rounded">
+            <IoTrash />
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

@@ -65,7 +65,18 @@ export function Procedures() {
 
   const [professionals, setProfessionals] = useState<ProfessionalProps[]>([]);
   const [procedures, setProcedures] = useState<ProcedureProps[]>([]);
-
+  function onEditProcedure(procedure: ProcedureProps) {
+    setNameToRegister(procedure.name);
+    setDescriptionToRegister(procedure.description);
+    setPriceToRegister(procedure.price);
+    setProfessionalToRegister(procedure.professionalId);
+    setTimeToRegister(procedure.duration);
+    setColor(procedure.color);
+    setOpenRegister(true);
+  }
+  function onDeleteProcedure(procedure: ProcedureProps) {
+    return
+  }
   function registerProcedure() {
     try {
       const response = fetch("http://localhost:3333/register-procedure", {
@@ -299,6 +310,8 @@ export function Procedures() {
               price={procedure.price}
               professionalId={procedure.professionalId}
               time={procedure.duration}
+              onEditProcedure={() => onEditProcedure(procedure)}
+              onDeleteProcedure={() => onDeleteProcedure(procedure)}
             />
           ))
         ) : (
