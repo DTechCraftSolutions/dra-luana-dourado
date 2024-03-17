@@ -105,7 +105,7 @@ export function Procedures() {
     } finally {
       getProcedures();
       getProfessionals();
-      window.location.reload();
+      setOpenRegister(false);
     }
   }
   async function onDeleteProcedure(procedure: ProcedureProps) {
@@ -126,7 +126,7 @@ export function Procedures() {
     } finally {
       getProcedures();
       getProfessionals();
-      window.location.reload();
+      setOpenRegister(false);
     }
   }
 
