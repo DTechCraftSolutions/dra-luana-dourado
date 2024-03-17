@@ -68,6 +68,7 @@ export function Procedures() {
   );
   const [professionals, setProfessionals] = useState<ProfessionalProps[]>([]);
   const [procedures, setProcedures] = useState<ProcedureProps[]>([]);
+  const [search, setSearch] = useState("");
   function onEditProcedure(procedure: ProcedureProps) {
     setNameToRegister(procedure.name);
     setDescriptionToRegister(procedure.description);
@@ -228,6 +229,7 @@ export function Procedures() {
         <input
           placeholder="Filtre por nome..."
           className=" rounded-full h-10 w-full border px-4"
+          onChange={(e) => setSearch(e.target.value)}
         />
         <Search className="relative text-zinc-400  right-8" />
       </div>
@@ -376,24 +378,38 @@ export function Procedures() {
       </Dialog>
       <div className="grid grid-cols-4 mt-4 w-full">
         {procedures.length > 0 ? (
-          procedures.map((procedure) => (
-            <ProcedureCard
-              setEdit={setEdit}
-              key={procedure.id}
-              id={procedure.id}
-              procedure={procedure.name}
-              color={procedure.color}
-              getNameProfessional={getNameProfessional}
-              price={procedure.price}
-              professionalId={procedure.professionalId}
-              time={procedure.duration}
-              onEditProcedure={() => onEditProcedure(procedure)}
-              onDeleteProcedure={() => onDeleteProcedure(procedure)}
-            />
-          ))
+          procedures.filter((procedure) =>
+            procedure.name.toLowerCase().includes(search.trim().toLowerCase())
+          ).length > 0 ? (
+            procedures
+              .filter((procedure) =>
+                procedure.name
+                  .toLowerCase()
+                  .includes(search.trim().toLowerCase())
+              )
+              .map((procedure) => (
+                <ProcedureCard
+                  setEdit={setEdit}
+                  key={procedure.id}
+                  id={procedure.id}
+                  procedure={procedure.name}
+                  color={procedure.color}
+                  getNameProfessional={getNameProfessional}
+                  price={procedure.price}
+                  professionalId={procedure.professionalId}
+                  time={procedure.duration}
+                  onEditProcedure={() => onEditProcedure(procedure)}
+                  onDeleteProcedure={() => onDeleteProcedure(procedure)}
+                />
+              ))
+          ) : (
+            <p className="text-primary">
+              Nenhum resultado encontrado para "{search}"
+            </p>
+          )
         ) : (
           <p className="text-primary">
-            Nenhum procedimento cadastrado mo momento...
+            Nenhum procedimento cadastrado no momento...
           </p>
         )}
       </div>
