@@ -62,7 +62,10 @@ export function Procedures() {
   const [nameToRegister, setNameToRegister] = useState("");
   const [descriptionToRegister, setDescriptionToRegister] = useState("");
   const [openRegister, setOpenRegister] = useState(false);
-
+  const [edit, setEdit] = useState(false);
+  const [currentProcedureSelected, setCurrentProcedureSelected] = useState<any>(
+    []
+  );
   const [professionals, setProfessionals] = useState<ProfessionalProps[]>([]);
   const [procedures, setProcedures] = useState<ProcedureProps[]>([]);
   function onEditProcedure(procedure: ProcedureProps) {
@@ -71,15 +74,74 @@ export function Procedures() {
     setPriceToRegister(procedure.price);
     setProfessionalToRegister(procedure.professionalId);
     setTimeToRegister(procedure.duration);
+    setCurrentProcedure(procedure.recurrence);
     setColor(procedure.color);
     setOpenRegister(true);
+    setCurrentProcedureSelected(procedure);
   }
-  function onDeleteProcedure(procedure: ProcedureProps) {
-    return
-  }
-  function registerProcedure() {
+  async function updateProcedure(procedure: ProcedureProps) {
     try {
-      const response = fetch("http://localhost:3333/register-procedure", {
+      await fetch("http://localhost:3333/update-procedure", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: procedure.id,
+          name: nameToRegister,
+          description: descriptionToRegister,
+          recurrence: currentProcedure,
+          price: priceToRegister,
+          professionalId: professionalToRegister,
+          duration: timeToRegister,
+          color,
+        }),
+      });
+      toast.success("Procedimento editado com sucesso");
+    } catch (error) {
+      toast.error("Erro ao editar o procedimento");
+      console.error(error);
+    } finally {
+      getProcedures();
+      getProfessionals();
+      window.location.reload();
+    }
+  }
+  async function onDeleteProcedure(procedure: ProcedureProps) {
+    try {
+      await fetch("http://localhost:3333/delete-procedure", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: procedure.id,
+        }),
+      });
+      toast.success("Procedimento excluido com sucesso");
+    } catch (error) {
+      toast.error("Erro ao excluir o procedimento");
+      console.error(error);
+    } finally {
+      getProcedures();
+      getProfessionals();
+      window.location.reload();
+    }
+  }
+
+  function clearFields() {
+    setNameToRegister("");
+    setDescriptionToRegister("");
+    setPriceToRegister(0);
+    setProfessionalToRegister("");
+    setTimeToRegister("");
+    setColor("");
+    setEdit(false);
+  }
+  async function registerProcedure() {
+    clearFields();
+    try {
+      await fetch("http://localhost:3333/register-procedure", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -99,15 +161,7 @@ export function Procedures() {
       console.error(error);
       toast.error("Erro ao registrar o procedimento");
     } finally {
-      setOpenRegister(false);
-      setNameToRegister("");
-      setDescriptionToRegister("");
-      setPriceToRegister(0);
-      setProfessionalToRegister("");
-      setTimeToRegister("");
-      setColor("");
-      getProcedures();
-      getProfessionals();
+      clearFields();
       window.location.reload();
     }
   }
@@ -156,6 +210,15 @@ export function Procedures() {
     getProfessionals();
     getProcedures();
   }, []);
+
+  useEffect(() => {
+    if (openRegister && edit === false) {
+      clearFields();
+    }
+    if (openRegister == false) {
+      clearFields();
+    }
+  }, [openRegister]);
 
   return (
     <div className="px-4 mt-2 w-full">
@@ -287,15 +350,27 @@ export function Procedures() {
             </div>
           </DialogDescription>
           <DialogFooter className="flex gap-4">
-            <DialogClose className=" justify-center py-1 w-32 mx-auto bg-zinc-300 flex items-center gap-2 rounded-full  text-primary hover:opacity-90 transition-opacity duration-300">
+            <DialogClose
+              onClick={() => clearFields()}
+              className=" justify-center py-1 w-32 mx-auto bg-zinc-300 flex items-center gap-2 rounded-full  text-primary hover:opacity-90 transition-opacity duration-300"
+            >
               Cancelar
             </DialogClose>
-            <Button
-              onClick={() => registerProcedure()}
-              className=" justify-center py-1 w-32 mx-auto bg-primary flex items-center gap-2 rounded-full  text-white hover:opacity-90 transition-opacity duration-300"
-            >
-              Confirmar
-            </Button>
+            {!edit ? (
+              <Button
+                onClick={() => registerProcedure()}
+                className=" justify-center py-1 w-32 mx-auto bg-primary flex items-center gap-2 rounded-full  text-white hover:opacity-90 transition-opacity duration-300"
+              >
+                Confirmar
+              </Button>
+            ) : (
+              <Button
+                onClick={() => updateProcedure(currentProcedureSelected)}
+                className=" justify-center py-1 w-32 mx-auto bg-primary flex items-center gap-2 rounded-full  text-white hover:opacity-90 transition-opacity duration-300"
+              >
+                Editar
+              </Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -303,7 +378,9 @@ export function Procedures() {
         {procedures.length > 0 ? (
           procedures.map((procedure) => (
             <ProcedureCard
+              setEdit={setEdit}
               key={procedure.id}
+              id={procedure.id}
               procedure={procedure.name}
               color={procedure.color}
               getNameProfessional={getNameProfessional}

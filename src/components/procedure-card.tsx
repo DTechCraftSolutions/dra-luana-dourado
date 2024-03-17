@@ -2,17 +2,20 @@ import React, { useEffect, useState } from "react";
 import { IoPencil, IoTrash } from "react-icons/io5";
 
 interface ProcedureCardProps {
+  id: string;
   procedure: string;
   time: string;
   professionalId: string;
   color: string;
   price: number;
-  onEditProcedure: () => void;
-  onDeleteProcedure: () => void;
+  setEdit: (value: boolean) => void;
+  onEditProcedure: (id: string) => any;
+  onDeleteProcedure: (id: string) => any;
   getNameProfessional: (id: string) => Promise<string>;
 }
 
 export function ProcedureCard({
+  id,
   procedure,
   time,
   professionalId,
@@ -21,6 +24,7 @@ export function ProcedureCard({
   getNameProfessional,
   onEditProcedure,
   onDeleteProcedure,
+  setEdit,
 }: ProcedureCardProps) {
   const [professionalName, setProfessionalName] = useState<string | null>(null);
 
@@ -36,6 +40,11 @@ export function ProcedureCard({
 
     fetchProfessionalName();
   }, [professionalId, getNameProfessional]);
+
+  function onEdit() {
+    setEdit(true);
+    onEditProcedure(id);
+  }
 
   return (
     <div className="w-72 h-36 shadow-md rounded-3xl p-4 bg-white">
@@ -62,10 +71,16 @@ export function ProcedureCard({
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={onEditProcedure} className="flex items-center gap-2 text-primary hover:bg-primary hover:text-white hover:duration-500 hover:ease-in-out hover:transform hover:rounded">
+          <button
+            onClick={() => onEdit()}
+            className="flex items-center gap-2 text-primary hover:bg-primary hover:text-white hover:duration-500 hover:ease-in-out hover:transform hover:rounded"
+          >
             <IoPencil />
           </button>
-          <button onClick={onDeleteProcedure} className="flex items-center gap-2 text-red-500 hover:bg-red-500 hover:text-white hover:duration-500 hover:ease-in-out hover:transform hover:rounded">
+          <button
+            onClick={() => onDeleteProcedure(id)}
+            className="flex items-center gap-2 text-red-500 hover:bg-red-500 hover:text-white hover:duration-500 hover:ease-in-out hover:transform hover:rounded"
+          >
             <IoTrash />
           </button>
         </div>
