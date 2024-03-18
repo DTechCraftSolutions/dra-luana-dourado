@@ -240,9 +240,15 @@ export function Procedures() {
         </DialogTrigger>
         <DialogContent className="max-w-[700px] flex flex-col items-center">
           <DialogHeader>
-            <DialogTitle className="mx-auto text-primary">
-              Novo procedimento
-            </DialogTitle>
+            {!edit ? (
+              <DialogTitle className="mx-auto text-primary">
+                Novo procedimento
+              </DialogTitle>
+            ) : (
+              <DialogTitle className="mx-auto text-primary">
+                Editar procedimento
+              </DialogTitle>
+            )}
           </DialogHeader>
           <DialogDescription className="mt-4 grid grid-cols-3 gap-4">
             <div>
