@@ -8,6 +8,7 @@ import { Patients } from "./pages/patients";
 import { Professionals } from "./pages/professionals";
 import { AvailabilityManagement } from "./pages/availability";
 import { Procedures } from "./pages/procedures";
+import { Plans } from "./pages/plans";
 
 export function RouterComponent() {
   const params = useParams();
@@ -24,6 +25,8 @@ export function RouterComponent() {
       return <AvailabilityManagement />;
     } else if (params.id === "procedures") {
       return <Procedures />;
+    } else if (params.id === "plans") {
+      return <Plans />;
     }
   };
   console.log(params);

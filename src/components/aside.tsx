@@ -55,6 +55,13 @@ export function Aside() {
         >
           <Link href="/procedures">Procedimentos</Link>
         </li>
+        <li
+          className={
+            path === "plans" ? "text-primary font-medium underline" : ""
+          }
+        >
+          <Link href="/plans">Planos</Link>
+        </li>
       </ul>
     </aside>
   );
