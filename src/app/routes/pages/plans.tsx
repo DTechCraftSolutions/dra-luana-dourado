@@ -4,10 +4,11 @@ import { Toaster, toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog";
 import { SketchPicker } from "react-color";
-import { Brush } from "lucide-react";
+import { Brush, Search } from "lucide-react";
 import { IoAdd } from "react-icons/io5";
 import Cookies from "js-cookie";
 import { TreatmentItem } from "@/components/treatment-item";
+import { PlanCard } from "@/components/plan-card";
 
 interface OrthodonticPlanProps {
     id: string;
@@ -40,6 +41,21 @@ export function Plans() {
     const [search, setSearch] = useState("");
     const [treatmentsList, setTreatmentsList] = useState<string[]>([]);
     const [openTreatmentModal, setOpenTreatmentModal] = useState(false);
+
+    const plans = [
+        {
+            id: "1",
+            name: "unimed"
+        },
+        {
+            id: "2",
+            name: "Amil"
+        },
+        {
+            id: "3",
+            name: "Santander"
+        }
+    ]
 
     const list = [
         "Limpeza",
@@ -115,7 +131,12 @@ export function Plans() {
             <h2 className="text-primary font-bold text-xl">Planos Ortodônticos</h2>
             {/* Input de pesquisa */}
             <div className="flex w-96 mt-4  justify-end items-center">
-                {/* Componente de pesquisa */}
+                <input
+                    placeholder="Filtre por nome..."
+                    className=" rounded-full h-10 w-full border px-4"
+                    onChange={(e) => setSearch(e.target.value)}
+                />
+                <Search className="relative text-zinc-400  right-8" />
             </div>
             {/* Diálogo para registro e edição de planos ortodônticos */}
             <Dialog open={openRegister} onOpenChange={setOpenRegister}>
@@ -173,7 +194,6 @@ export function Plans() {
                                 if (edit) {
                                     updatePlan(currentPlanSelected);
                                 } else {
-                                    // registerPlan();
                                     setOpenTreatmentModal(true);
                                 }
                             }}>
@@ -189,7 +209,6 @@ export function Plans() {
                     </DialogHeader>
                     <DialogDescription className="max-h-[500px]">
                         <div className="max-h-[400px] overflow-y-scroll ">
-                            {/* Lista de tratamentos do plano selecionado */}
                             {list.map((treatment, index) => (
                                 <TreatmentItem key={index} name={treatment} />
                             ))}
@@ -217,9 +236,11 @@ export function Plans() {
                     </div>
                 </DialogContent>
             </Dialog>
-            {/* Lista de planos ortodônticos */}
+
             <div className="grid grid-cols-4 mt-4 w-full">
-                {/* Renderização da lista de planos ortodônticos */}
+                {plans && plans.map((plan, index) => (
+                    <PlanCard key={index} name={plan.name} onDelete={() => { }} onEdit={() => { }} />
+                ))}
             </div>
         </div>
     );
