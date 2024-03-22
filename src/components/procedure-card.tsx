@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { IoPencil, IoTrash } from "react-icons/io5";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Button } from "./ui/button";
 
 interface ProcedureCardProps {
   id: string;
@@ -27,7 +29,7 @@ export function ProcedureCard({
   setEdit,
 }: ProcedureCardProps) {
   const [professionalName, setProfessionalName] = useState<string | null>(null);
-
+  const [deleteModal, setDeleteModal] = useState(false);
   useEffect(() => {
     const fetchProfessionalName = async () => {
       try {
@@ -78,13 +80,38 @@ export function ProcedureCard({
             <IoPencil />
           </button>
           <button
-            onClick={() => onDeleteProcedure(id)}
+            onClick={() => setDeleteModal(true)}
             className="flex items-center gap-2 text-red-500 hover:bg-red-500 hover:text-white hover:duration-500 hover:ease-in-out hover:transform hover:rounded"
           >
             <IoTrash />
           </button>
         </div>
       </div>
+      <Dialog open={deleteModal} onOpenChange={setDeleteModal} modal>
+        <DialogContent>
+
+          <p className="text-center text-sm ">
+            Tem certeza que deseja deletar este procedimento?
+          </p>
+          <div className="flex justify-center items-center gap-4 mt-4">
+            <Button
+            className="rounded-full"
+              onClick={() => onDeleteProcedure(id)}
+             variant={"destructive"}
+            >
+              Deletar
+            </Button>
+            <Button
+            className="rounded-full"
+              variant={"outline"}
+              onClick={() => setDeleteModal(false)}
+            >
+              Cancelar
+            </Button>
+          </div>
+
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
