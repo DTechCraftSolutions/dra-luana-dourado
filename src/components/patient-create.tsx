@@ -55,7 +55,7 @@ interface PatientProps {
   setCreatedPatient: any;
   openDialog: boolean;
   setOpenDialog: (value: boolean) => void;
-  editPayload: Patient | null;
+  editPayload: Patient | null | any;
   setEditPayload: any;
 }
 
@@ -87,7 +87,13 @@ const patientSchema = z.object({
 
 type PatientSchema = z.infer<typeof patientSchema>;
 
-export function PatientCreate({ setCreatedPatient, openDialog, setOpenDialog, editPayload, setEditPayload }: PatientProps) {
+export function PatientCreate({
+  setCreatedPatient,
+  openDialog,
+  setOpenDialog,
+  editPayload,
+  setEditPayload,
+}: PatientProps) {
   const {
     handleSubmit,
     formState,
@@ -122,7 +128,7 @@ export function PatientCreate({ setCreatedPatient, openDialog, setOpenDialog, ed
   const [cep, birth_date] = watch(["cep", "birth_date"]);
   const [displayResponsibleFields, setDisplayResponsibleFields] =
     useState(false);
- 
+
   useEffect(() => {
     if (editPayload) {
       setValue("birth_date", editPayload.birth_date);
@@ -148,7 +154,7 @@ export function PatientCreate({ setCreatedPatient, openDialog, setOpenDialog, ed
       setValue("telphone_responsible", editPayload.telphone_responsible);
       setValue("comments_responsible", editPayload.comments_responsible);
     }
-  }, [editPayload])
+  }, [editPayload]);
   async function handleCreatePatient(data: PatientSchema) {
     try {
       await fetch("http://localhost:3333/register-patient", {
@@ -196,13 +202,49 @@ export function PatientCreate({ setCreatedPatient, openDialog, setOpenDialog, ed
     fetchCep();
   }, [cep]);
 
-  async function onEditPatient(){
+  async function onEditPatient() {
     try {
-    }
-    catch (error) {
-    }
-    finally {
-      setEditPayload(undefined);
+      const dataSchemaEdit = {
+        id: editPayload?.id,
+        birth_date: editPayload.birth_date,
+        cep: editPayload.cep,
+        city: editPayload.city,
+        complement: editPayload.complement,
+        neighborhood: editPayload.neighborhood,
+        number: editPayload.number,
+        road: editPayload.road,
+        role: editPayload.role,
+        state: editPayload.state,
+        telephone: editPayload.telephone,
+        card_number: editPayload.card_number,
+        comments: editPayload.comments,
+        cpf: editPayload.cpf,
+        full_name: editPayload.full_name,
+        rg: editPayload.rg,
+        sex: editPayload.sex,
+        responsible_name: editPayload.responsible_name || undefined,
+        responsible_cpf: editPayload.responsible_cpf || undefined,
+        responsible_rg: editPayload.responsible_rg || undefined,
+        birth_date_responsible: editPayload.birth_date_responsible || undefined,
+        telphone_responsible: editPayload.telphone_responsible || undefined,
+        comments_responsible: editPayload.comments_responsible || undefined,
+      };
+      await fetch("http://localhost:3333/update-patient", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataSchemaEdit),
+      });
+      toast.success("Paciente editado com sucesso");
+      console.log("edit:", dataSchemaEdit);
+    } catch (error) {
+      console.log(error);
+      toast.error("Erro ao editar paciente");
+    } finally {
+      setOpenDialog(false);
+      setCreatedPatient(true);
+      setEditPayload(null);
     }
   }
 
@@ -225,7 +267,7 @@ export function PatientCreate({ setCreatedPatient, openDialog, setOpenDialog, ed
   }, [birth_date]);
 
   return (
-    <div className="w-full flex mt-4 mb-4" onClick={() => { }}>
+    <div className="w-full flex mt-4 mb-4">
       <Toaster position="bottom-right" richColors />
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogTrigger className="mt-4 md:mt-0 px-14 py-2 bg-green-600 rounded-full flex items-center gap-2 text-white font-semibold hover:opacity-90 transition-opacity duration-300">
@@ -239,7 +281,13 @@ export function PatientCreate({ setCreatedPatient, openDialog, setOpenDialog, ed
             </DialogTitle>
           </DialogHeader>
           <div className="w-full">
-            <form onSubmit={handleSubmit(handleCreatePatient)}>
+            <form
+              onSubmit={
+                editPayload
+                  ? handleSubmit(onEditPatient)
+                  : handleSubmit(handleCreatePatient)
+              }
+            >
               {/* first row */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <Controller
@@ -601,12 +649,24 @@ export function PatientCreate({ setCreatedPatient, openDialog, setOpenDialog, ed
                 >
                   Cancelar
                 </button>
-                <button
-                  type="submit"
-                  className="bg-primary text-white px-2 py-2 rounded-full hover:bg-blue-600 transition-colors w-40 gap-2"
-                >
-                  {editPayload ? "Editar" : "Cadastrar"}
-                </button>
+
+                {!editPayload ? (
+                  <button
+                    type="submit"
+                    className="bg-primary text-white px-2 py-2 rounded-full hover:bg-primary/80 transition-colors w-40 gap-2"
+                  >
+                    Cadastrar
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      onEditPatient();
+                    }}
+                    className="bg-primary text-white px-2 py-2 rounded-full hover:bg-primary/80 transition-colors w-40 gap-2"
+                  >
+                    Atualizar
+                  </button>
+                )}
               </div>
             </form>
           </div>

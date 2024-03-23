@@ -1,8 +1,9 @@
 "use client";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import Schedules from "./(dashboard)/[id]/page";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import Loading from "./loading";
 
 export default function Home() {
   const router = useRouter();
@@ -15,7 +16,9 @@ export default function Home() {
 
   return (
     <>
-      <Schedules />
+      <Suspense fallback={<Loading />}>
+        <Schedules />
+      </Suspense>
     </>
   );
 }
