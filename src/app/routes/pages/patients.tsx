@@ -46,10 +46,12 @@ export function Patients() {
   const [patientSearchList, setPatientSearchList] = useState<PatientProps[]>(
     []
   );
+  const [editPayload, setEditPayload] = useState<PatientProps | null>(null);
   const [data, setData] = useState<PatientProps[]>([]);
   const [search, setSearch] = useState("");
   const [selectedPatient, setSelectedPatient] = useState<PatientProps | null>(null); //prettier-ignore
   const [createdPatient, setCreatedPatient] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
   //TODO: implement handleSearch function
   async function handleSearch(patientName: string) {
     try {
@@ -121,12 +123,14 @@ export function Patients() {
           <Search className="relative right-10 cursor-pointer  w-[20px] text-zinc-400" />
         </div>
 
-        <PatientCreate setCreatedPatient={setCreatedPatient} />
+        <PatientCreate setEditPayload={setEditPayload} editPayload={editPayload} setOpenDialog={setOpenDialog} openDialog={openDialog} setCreatedPatient={setCreatedPatient} />
       </div>
 
       {selectedPatient ? (
         <div className="w-full flex flex-col gap-2 mt-5">
           <PatientDetailTabs
+            openModal={setOpenDialog}
+            setEditPayload={setEditPayload}
             setPatient={setSelectedPatient}
             patient={selectedPatient as PatientProps}
           />

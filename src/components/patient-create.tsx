@@ -53,6 +53,10 @@ interface Patient {
 
 interface PatientProps {
   setCreatedPatient: any;
+  openDialog: boolean;
+  setOpenDialog: (value: boolean) => void;
+  editPayload: Patient | null;
+  setEditPayload: any;
 }
 
 // Schema do paciente utilizando Zod
@@ -83,7 +87,7 @@ const patientSchema = z.object({
 
 type PatientSchema = z.infer<typeof patientSchema>;
 
-export function PatientCreate({ setCreatedPatient }: PatientProps) {
+export function PatientCreate({ setCreatedPatient, openDialog, setOpenDialog, editPayload, setEditPayload }: PatientProps) {
   const {
     handleSubmit,
     formState,
@@ -118,8 +122,33 @@ export function PatientCreate({ setCreatedPatient }: PatientProps) {
   const [cep, birth_date] = watch(["cep", "birth_date"]);
   const [displayResponsibleFields, setDisplayResponsibleFields] =
     useState(false);
-  const [openDialog, setOpenDialog] = useState(false);
-
+ 
+  useEffect(() => {
+    if (editPayload) {
+      setValue("birth_date", editPayload.birth_date);
+      setValue("cep", editPayload.cep);
+      setValue("city", editPayload.city);
+      setValue("complement", editPayload.complement);
+      setValue("neighborhood", editPayload.neighborhood);
+      setValue("number", editPayload.number);
+      setValue("road", editPayload.road);
+      setValue("role", editPayload.role);
+      setValue("state", editPayload.state);
+      setValue("telephone", editPayload.telephone);
+      setValue("card_number", editPayload.card_number);
+      setValue("comments", editPayload.comments);
+      setValue("cpf", editPayload.cpf);
+      setValue("full_name", editPayload.full_name);
+      setValue("rg", editPayload.rg);
+      setValue("sex", editPayload.sex);
+      setValue("responsible_name", editPayload.responsible_name);
+      setValue("responsible_cpf", editPayload.responsible_cpf);
+      setValue("responsible_rg", editPayload.responsible_rg);
+      setValue("birth_date_responsible", editPayload.birth_date_responsible);
+      setValue("telphone_responsible", editPayload.telphone_responsible);
+      setValue("comments_responsible", editPayload.comments_responsible);
+    }
+  }, [editPayload])
   async function handleCreatePatient(data: PatientSchema) {
     try {
       await fetch("http://localhost:3333/register-patient", {
@@ -167,6 +196,16 @@ export function PatientCreate({ setCreatedPatient }: PatientProps) {
     fetchCep();
   }, [cep]);
 
+  async function onEditPatient(){
+    try {
+    }
+    catch (error) {
+    }
+    finally {
+      setEditPayload(undefined);
+    }
+  }
+
   useEffect(() => {
     const birthDateParts = birth_date.split("/");
     const birthDate = new Date(
@@ -186,7 +225,7 @@ export function PatientCreate({ setCreatedPatient }: PatientProps) {
   }, [birth_date]);
 
   return (
-    <div className="w-full flex mt-4 mb-4" onClick={() => {}}>
+    <div className="w-full flex mt-4 mb-4" onClick={() => { }}>
       <Toaster position="bottom-right" richColors />
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogTrigger className="mt-4 md:mt-0 px-14 py-2 bg-green-600 rounded-full flex items-center gap-2 text-white font-semibold hover:opacity-90 transition-opacity duration-300">
@@ -196,7 +235,7 @@ export function PatientCreate({ setCreatedPatient }: PatientProps) {
         <DialogContent className="min-w-[80%] max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="mx-auto text-primary">
-              Cadastrar novo paciente
+              {editPayload ? "Editar Paciente" : "Cadastrar Paciente"}
             </DialogTitle>
           </DialogHeader>
           <div className="w-full">
@@ -566,7 +605,7 @@ export function PatientCreate({ setCreatedPatient }: PatientProps) {
                   type="submit"
                   className="bg-primary text-white px-2 py-2 rounded-full hover:bg-blue-600 transition-colors w-40 gap-2"
                 >
-                  Cadastrar
+                  {editPayload ? "Editar" : "Cadastrar"}
                 </button>
               </div>
             </form>

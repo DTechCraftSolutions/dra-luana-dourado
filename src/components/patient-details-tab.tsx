@@ -2,12 +2,14 @@ import { PatientProps } from "@/app/routes/pages/patients";
 import { useState } from "react";
 import { BudgetsRender } from "./tab-contents/patients/budgets";
 import { ArrowLeft } from "lucide-react";
-import { IoArrowBack } from "react-icons/io5";
+import { IoArrowBack, IoPencil } from "react-icons/io5";
 import { Treatments } from "./tab-contents/patients/treatments";
 import { DocsComponent } from "./tab-contents/patients/docs";
+import { Button } from "./ui/button";
 
-const PatientDetailTabs = ({ patient, setPatient }: { patient: PatientProps, setPatient: any }) => {
+const PatientDetailTabs = ({ patient, setPatient, setEditPayload, openModal}: { patient: PatientProps, setPatient: any, setEditPayload: any, openModal: any}) => {
   const [activeTab, setActiveTab] = useState("tab1-data");
+
 
   const TabButton = ({ tabId, label }: { tabId: string; label: string }) => (
     <button
@@ -73,6 +75,13 @@ const PatientDetailTabs = ({ patient, setPatient }: { patient: PatientProps, set
                 }`}
               />
             </div>
+            <Button onClick={() => {
+              setEditPayload(patient)
+              openModal(true)
+            }} className="rounded-full mt-5 gap-2">
+              <IoPencil/>
+              Editar
+            </Button>
           </div>
         }
       />
