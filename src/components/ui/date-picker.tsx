@@ -1,30 +1,44 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { format } from "date-fns"
-import { Calendar as CalendarIcon } from "lucide-react"
+import * as React from "react";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
 
-import { ptBR } from "date-fns/locale"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
+import { ptBR } from "date-fns/locale";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
+import { getDayOfWeek } from "@/utils/day-week";
 
 interface DatePickerProps {
-  date?: Date
-  setDate: React.Dispatch<React.SetStateAction<Date | undefined>>
-  fromDate?: Date
+  date?: Date;
+  setDate: React.Dispatch<React.SetStateAction<Date | undefined>>;
+  fromDate?: Date;
+  setDayWeek: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export function DatePickerDemo({ date, setDate, fromDate }: DatePickerProps) {
-  const [openPopover, setOpenPopover] = React.useState(false)
+export function DatePickerDemo({
+  date,
+  setDate,
+  fromDate,
+  setDayWeek,
+}: DatePickerProps) {
+  const [openPopover, setOpenPopover] = React.useState(false);
+
+  React.useEffect(() => {
+    if (date) {
+      setDayWeek(getDayOfWeek(date));
+    }
+  }, [date]);
+
   return (
     <Popover open={openPopover} onOpenChange={setOpenPopover}>
-      <PopoverTrigger  asChild>
+      <PopoverTrigger asChild>
         <Button
           variant={"outline"}
           className={cn(
@@ -43,12 +57,12 @@ export function DatePickerDemo({ date, setDate, fromDate }: DatePickerProps) {
           mode="single"
           selected={date}
           onSelect={(date) => {
-            setDate(date)
-            setOpenPopover(false)
+            setDate(date);
+            setOpenPopover(false);
           }}
           initialFocus
         />
       </PopoverContent>
     </Popover>
-  )
+  );
 }

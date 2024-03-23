@@ -11,8 +11,10 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { PatientProps } from "@/app/routes/pages/patients";
 import Autosuggest from "react-autosuggest";
 import { isBefore } from "date-fns";
+import { toast, Toaster } from "sonner";
 
 interface ProfessionalProps {
+  id: string;
   name: string;
   email: string;
   office: string;
@@ -37,12 +39,21 @@ interface AvailableProps {
   initial_time: string;
   end_time: string;
 }
-export function NewSchedule({openModal, setOpenModal}: {
+export function NewSchedule({
+  openModal,
+  setOpenModal,
+}: {
   openModal: boolean;
-  setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;}) {
+  setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
+  dayWeek: string;
+}) {
+  const [dayWeek, setDayWeek] = React.useState("");
   const [steps, setSteps] = React.useState(0);
   const [date, setDate] = React.useState<Date>();
-  const [pacient, setPacient] = React.useState("");
+  const [pacient, setPacient] = React.useState({
+    name: "",
+    id: "",
+  });
   const [professional, setProfessional] = React.useState("");
   const [procedure, setProcedure] = React.useState("");
   const [time, setTime] = React.useState("");
@@ -118,11 +129,17 @@ export function NewSchedule({openModal, setOpenModal}: {
     }
   }
 
-  async function findAllAvailability() {
+  async function findByDayWeekAvailability() {
     try {
-      const response = await fetch(
-        "http://localhost:3333/find-all-available-times"
-      );
+      const response = await fetch("http://localhost:3333/find-by-day-week", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          day_of_week: dayWeek,
+        }),
+      });
       const data = await response.json();
       setDataAvailables(data.availableTimes);
     } catch (error) {
@@ -130,17 +147,48 @@ export function NewSchedule({openModal, setOpenModal}: {
     }
   }
 
+  async function registerSchedule() {
+    try {
+      await fetch("http://localhost:3333/register-schedule", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          date,
+          patientId: pacient.id,
+          professionalId: professional,
+          procedureId: procedure,
+          availableTimeId: time,
+          status: "PENDENTE",
+        }),
+      });
+      toast.success("Agendamento realizado com sucesso");
+    } catch (error) {
+      console.error(error);
+      toast.error("Erro ao realizar o agendamento");
+    } finally {
+      setOpenModal(false);
+    }
+  }
+
   const onInputChange = (
     event: React.FormEvent,
     { newValue }: Autosuggest.ChangeEvent
   ) => {
-    setPacient(newValue);
+    setPacient({
+      name: newValue,
+      id: "",
+    });
   };
   const onSuggestionSelected = (
     event: React.FormEvent,
     { suggestion }: Autosuggest.SuggestionSelectedEventData<PatientProps>
   ) => {
-    setPacient(suggestion.full_name);
+    setPacient({
+      name: suggestion.full_name,
+      id: suggestion.id,
+    });
   };
   const getSuggestions = (value: string) => {
     const inputValue = value.trim().toLowerCase();
@@ -156,15 +204,23 @@ export function NewSchedule({openModal, setOpenModal}: {
     getPatients();
     getProfessionals();
     getProcedures();
-    findAllAvailability();
   }, []);
+
+  useEffect(() => {
+    findByDayWeekAvailability();
+  }, [dayWeek, date]);
 
   return (
     <div className="w-full flex flex-col items-center">
       {steps === 0 && (
         <div>
           <h2 className="mb-2">Selecione uma data para continuar</h2>
-          <DatePickerDemo fromDate={new Date()}  date={date} setDate={setDate} />
+          <DatePickerDemo
+            fromDate={new Date()}
+            date={date}
+            setDate={setDate}
+            setDayWeek={setDayWeek}
+          />
         </div>
       )}
       {steps === 1 && (
@@ -189,7 +245,7 @@ export function NewSchedule({openModal, setOpenModal}: {
               className:
                 "w-full h-10 px-4  rounded-full border-[1px] focus:outline-none focus:duration-500 focus:border-primary",
               placeholder: "Digite o nome do paciente",
-              value: pacient,
+              value: pacient.name,
               onChange: onInputChange,
             }}
             onSuggestionSelected={onSuggestionSelected}
@@ -203,10 +259,7 @@ export function NewSchedule({openModal, setOpenModal}: {
                 </SelectTrigger>
                 <SelectContent>
                   {dataProfessionals.map((professional) => (
-                    <SelectItem
-                      key={professional.CRO}
-                      value={professional.name}
-                    >
+                    <SelectItem key={professional.CRO} value={professional.id}>
                       {professional.name}
                     </SelectItem>
                   ))}
@@ -221,7 +274,7 @@ export function NewSchedule({openModal, setOpenModal}: {
                 </SelectTrigger>
                 <SelectContent>
                   {dataProcedures.map((procedure) => (
-                    <SelectItem key={procedure.id} value={procedure.name}>
+                    <SelectItem key={procedure.id} value={procedure.id}>
                       {procedure.name}
                     </SelectItem>
                   ))}
@@ -239,8 +292,8 @@ export function NewSchedule({openModal, setOpenModal}: {
               <SelectValue placeholder="Escolha" />
             </SelectTrigger>
             <SelectContent>
-              {dataAvailables.map((available) => (
-                <SelectItem key={available.id} value={available.label}>
+              {dataAvailables?.map((available) => (
+                <SelectItem key={available.id} value={available.id}>
                   {available.label} - {available.day_of_week}
                 </SelectItem>
               ))}
@@ -260,8 +313,7 @@ export function NewSchedule({openModal, setOpenModal}: {
         <button
           onClick={() => {
             if (steps === 2) {
-              setOpenModal(false)
-              return
+              registerSchedule();
             }
             nextStep();
           }}
