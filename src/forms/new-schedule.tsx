@@ -42,11 +42,15 @@ interface AvailableProps {
 export function NewSchedule({
   openModal,
   setOpenModal,
+  setRegisterSchedule,
 }: {
-  openModal: boolean;
-  setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
-  dayWeek: string;
+  openModal?: boolean;
+  setOpenModal?: React.Dispatch<React.SetStateAction<boolean>>;
+  dayWeek?: string;
+  setRegisterSchedule?: any;
 }) {
+  const [availableTimeUsed, setAvailableTimeUsed] = React.useState<any>([]);
+  const [allSchedules, setAllSchedules] = React.useState<any>([]);
   const [dayWeek, setDayWeek] = React.useState("");
   const [steps, setSteps] = React.useState(0);
   const [date, setDate] = React.useState<Date>();
@@ -168,7 +172,19 @@ export function NewSchedule({
       console.error(error);
       toast.error("Erro ao realizar o agendamento");
     } finally {
+      setRegisterSchedule(true);
+      if (!setOpenModal) return;
       setOpenModal(false);
+    }
+  }
+
+  async function getAllSchedules() {
+    try {
+      const response = await fetch("http://localhost:3333/find-schedule");
+      const data = await response.json();
+      setAllSchedules(data);
+    } catch (error) {
+      console.error(error);
     }
   }
 
@@ -208,7 +224,25 @@ export function NewSchedule({
 
   useEffect(() => {
     findByDayWeekAvailability();
-  }, [dayWeek, date]);
+    getAllSchedules();
+
+    const availableTimeUsedInDateSchedule = allSchedules
+      .filter((item: any) => item.date === date?.toISOString())
+      .map((item: any) => item.availableTimeId);
+
+    setAvailableTimeUsed(availableTimeUsedInDateSchedule);
+
+    const pacientAgendedInDateSchedule = allSchedules
+      .filter((item: any) => item.date === date?.toISOString())
+      .map((item: any) => item.patientId);
+
+    if (
+      pacientAgendedInDateSchedule.some((item: any) => item === pacient.id) ===
+      true
+    ) {
+      toast.error("Paciente ja agendado para essa data");
+    }
+  }, [dayWeek, date, procedure, pacient, professional]);
 
   return (
     <div className="w-full flex flex-col items-center">
@@ -287,16 +321,19 @@ export function NewSchedule({
       {steps === 2 && (
         <div>
           <h2 className="font-medium">Selecione um horário:</h2>
+
           <Select onValueChange={setTime}>
-            <SelectTrigger className="w-full md:w-[180px] bg-primary rounded-full text-white">
+            <SelectTrigger className=" w-full md:w-[180px] bg-primary rounded-full text-white">
               <SelectValue placeholder="Escolha" />
             </SelectTrigger>
-            <SelectContent>
-              {dataAvailables?.map((available) => (
-                <SelectItem key={available.id} value={available.id}>
-                  {available.label} - {available.day_of_week}
-                </SelectItem>
-              ))}
+            <SelectContent className="overflow-y-scroll h-56">
+              {dataAvailables
+                ?.filter((item) => !availableTimeUsed.includes(item.id))
+                ?.map((available) => (
+                  <SelectItem key={available.id} value={available.id}>
+                    {available.label} - {available.day_of_week}
+                  </SelectItem>
+                ))}
             </SelectContent>
           </Select>
         </div>

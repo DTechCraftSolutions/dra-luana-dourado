@@ -32,12 +32,12 @@ interface ProfessionalProps {
 
 export function Schedules() {
   const [date, setDate] = useState<Date | undefined>(new Date());
-  const [selectProfessional, setSelectProfessional] = useState<string>("");
+  const [selectProfessional, setSelectProfessional] = useState<string>("all");
   const [professionals, setProfessionals] = useState<ProfessionalProps[]>([]);
   const [openModal, setOpenModal] = useState(false);
   const [dayWeek, setDayWeek] = useState("");
   const [scheduleByProfessional, setScheduleByProfessional] = useState<any>([]);
-
+  const [registeredSchedule, setRegisteredSchedule] = useState(false);
   const formatDate = (date: Date) => format(date, "dd/MM/yyyy");
   const dataFormatada = format(date || new Date(), "EEEE", { locale: ptBR });
   const CapitalizedWeekDay =
@@ -79,10 +79,10 @@ export function Schedules() {
   }, []);
 
   useEffect(() => {
-    if (selectProfessional) {
+    if (selectProfessional || registeredSchedule) {
       getSchedulesByProfessional();
     }
-  }, [selectProfessional]);
+  }, [selectProfessional, registeredSchedule]);
 
   return (
     <div className="mt-2 w-full px-4">
@@ -115,11 +115,15 @@ export function Schedules() {
           </Select>
         </div>
         <div>
-          <Select onValueChange={(value) => setSelectProfessional(value)}>
+          <Select
+            onValueChange={(value) => setSelectProfessional(value)}
+            defaultValue="all"
+          >
             <SelectTrigger className="w-full md:w-[300px] rounded-full">
               <SelectValue placeholder="Selecione o profissional" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="all">Todos</SelectItem>
               {professionals.map((professional) => (
                 <SelectItem key={professional.CRO} value={professional.id}>
                   {professional.name}
@@ -140,6 +144,7 @@ export function Schedules() {
               </DialogTitle>
             </DialogHeader>
             <NewSchedule
+              setRegisterSchedule={setRegisteredSchedule}
               dayWeek={dayWeek}
               setOpenModal={setOpenModal}
               openModal={openModal}
