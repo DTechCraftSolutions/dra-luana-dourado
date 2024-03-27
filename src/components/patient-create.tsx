@@ -91,7 +91,7 @@ export function PatientCreate({
   setCreatedPatient,
   openDialog,
   setOpenDialog,
-  editPayload,
+  editPayload = {},
   setEditPayload,
 }: PatientProps) {
   const {
@@ -105,7 +105,7 @@ export function PatientCreate({
     clearErrors,
   } = useForm<PatientSchema>({
     resolver: zodResolver(patientSchema),
-    defaultValues: {
+    defaultValues: editPayload || {
       birth_date: "",
       cep: "",
       city: "",
@@ -122,13 +122,13 @@ export function PatientCreate({
       full_name: "",
       rg: "",
       sex: "",
+      responsible_name: "",
+      responsible_cpf: "",
+      responsible_rg: "",
+      birth_date_responsible: "",
     },
-  });
-
-  const [cep, birth_date] = watch(["cep", "birth_date"]);
-  const [displayResponsibleFields, setDisplayResponsibleFields] =
-    useState(false);
-
+  }
+  );
   useEffect(() => {
     if (editPayload) {
       setValue("birth_date", editPayload.birth_date);
@@ -155,6 +155,10 @@ export function PatientCreate({
       setValue("comments_responsible", editPayload.comments_responsible);
     }
   }, [editPayload]);
+  var { ...patient }: any = watch()
+  const [cep, birth_date] = watch(["cep", "birth_date"]);
+  const [displayResponsibleFields, setDisplayResponsibleFields] =
+    useState(false);
   async function handleCreatePatient(data: PatientSchema) {
     try {
       await fetch("http://localhost:3333/register-patient", {
@@ -175,69 +179,22 @@ export function PatientCreate({
     }
   }
 
-  async function fetchCep() {
-    try {
-      const cepJustNumbers = removeSpecialChars(cep);
-
-      if (cepJustNumbers.length === 8) {
-        const response = await axios.get(
-          `https://viacep.com.br/ws/${cepJustNumbers}/json/`
-        );
-        const data = response.data;
-        if (data.erro) {
-          console.log(data);
-          return;
-        }
-
-        setValue("road", data.logradouro);
-        setValue("neighborhood", data.bairro);
-        setValue("state", data.uf);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  useEffect(() => {
-    fetchCep();
-  }, [cep]);
-
   async function onEditPatient() {
     try {
-      const dataSchemaEdit = {
-        id: editPayload?.id,
-        birth_date: editPayload.birth_date,
-        cep: editPayload.cep,
-        city: editPayload.city,
-        complement: editPayload.complement,
-        neighborhood: editPayload.neighborhood,
-        number: editPayload.number,
-        road: editPayload.road,
-        role: editPayload.role,
-        state: editPayload.state,
-        telephone: editPayload.telephone,
-        card_number: editPayload.card_number,
-        comments: editPayload.comments,
-        cpf: editPayload.cpf,
-        full_name: editPayload.full_name,
-        rg: editPayload.rg,
-        sex: editPayload.sex,
-        responsible_name: editPayload.responsible_name || undefined,
-        responsible_cpf: editPayload.responsible_cpf || undefined,
-        responsible_rg: editPayload.responsible_rg || undefined,
-        birth_date_responsible: editPayload.birth_date_responsible || undefined,
-        telphone_responsible: editPayload.telphone_responsible || undefined,
-        comments_responsible: editPayload.comments_responsible || undefined,
-      };
+      for (const key in patient) {
+        if(patient[key] === editPayload[key]) {
+          delete patient[key];
+        }
+      }
       await fetch("http://localhost:3333/update-patient", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(dataSchemaEdit),
+        body: JSON.stringify(patient), // Envia apenas os campos editados
       });
       toast.success("Paciente editado com sucesso");
-      console.log("edit:", dataSchemaEdit);
+      console.log("edit:", patient);
     } catch (error) {
       console.log(error);
       toast.error("Erro ao editar paciente");
@@ -247,7 +204,6 @@ export function PatientCreate({
       setEditPayload(null);
     }
   }
-
   useEffect(() => {
     const birthDateParts = birth_date.split("/");
     const birthDate = new Date(
