@@ -7,12 +7,15 @@ import { useState } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { Toaster, toast } from "sonner";
+import { LoadingIndicator } from "@/components/loading-indicator";
+import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 
 interface DataProps {
   email: string;
   password: string;
 }
 export default function Login() {
+  const [securityEntry, setSecurityEntry] = useState(true);
   const [data, setData] = useState<DataProps>({
     email: "",
     password: "",
@@ -36,8 +39,13 @@ export default function Login() {
       const { token } = responseData;
       if (token) {
         Cookies.set("token", token);
+        toast.success("Login realizado com sucesso, Seja bem-vindo!");
       }
-      toast.success("Login realizado com sucesso, Seja bem-vindo!");
+      if (!token) {
+        toast.error("Email ou senha inválidos");
+        setLoading(false);
+        return
+      }
     } catch (error) {
       console.error(error);
       toast.error("Erro ao realizar o login");
@@ -80,28 +88,27 @@ export default function Login() {
             className="flex flex-col gap-3"
           >
             <label htmlFor="email">Email</label>
-            <RoundedInput
-              className="text-black px-4 outline-none"
-              id="email"
-              type="email"
-              onChange={(e) => setData({ ...data, email: e.target.value })}
-            />
+            <input type="text" className="w-full text-black px-4 rounded-full h-10 border-primary" onChange={(e) => setData({ ...data, email: e.target.value })} id="email" />
             <label htmlFor="password">Senha</label>
-            <RoundedInput
-              className="text-black px-4 outline-none"
-              id="password"
-              type="password"
-              onChange={(e) => setData({ ...data, password: e.target.value })}
-            />
+            <div className=" items-center w-full bg-white rounded-full h-10 border-primary flex">
+              <input className="w-[90%] text-black h-10 rounded-full px-4" type={securityEntry ? "password" : "text"} id="password" onChange={(e) => setData({ ...data, password: e.target.value })} />
+              {
+                securityEntry ? (
+                  <IoMdEye className="text-primary ml-2  w-6 h-6 cursor-pointer" onClick={() => setSecurityEntry(!securityEntry)} />
+                ) : (
+                  <IoMdEyeOff onClick={() => setSecurityEntry(!securityEntry)} className="text-primary ml-2 w-6 h-6 cursor-pointer" />
+                )
+              }
+            </div>
             <Link href={"/dashboard/schedules"}>
               <button
                 disabled={loading}
                 onClick={(event) => handleLogin(data, event)}
                 type="submit"
-                className="w-full bg-white h-14 text-primary font-bold 
-                shadow-md rounded-full mt-8 hover:opacity-70 transition-all duration-300"
+                className={`w-full bg-white h-14 text-primary font-bold 
+                shadow-md rounded-full mt-8 ${loading ? "" : "hover:opacity-80"}	 transition-all duration-300`}
               >
-                Entrar
+                {loading ? <LoadingIndicator /> : "Entrar"}
               </button>
             </Link>
           </form>

@@ -85,6 +85,30 @@ const patientSchema = z.object({
   comments_responsible: z.string().optional(),
 });
 
+
+const initialValues = {
+  birth_date: "",
+  cep: "",
+  city: "",
+  complement: "",
+  neighborhood: "",
+  number: "",
+  road: "",
+  role: "",
+  state: "",
+  telephone: "",
+  card_number: "",
+  comments: "",
+  cpf: "",
+  full_name: "",
+  rg: "",
+  sex: "",
+  responsible_name: "",
+  responsible_cpf: "",
+  responsible_rg: "",
+  birth_date_responsible: "",
+}
+
 type PatientSchema = z.infer<typeof patientSchema>;
 
 export function PatientCreate({
@@ -105,28 +129,7 @@ export function PatientCreate({
     clearErrors,
   } = useForm<PatientSchema>({
     resolver: zodResolver(patientSchema),
-    defaultValues: editPayload || {
-      birth_date: "",
-      cep: "",
-      city: "",
-      complement: "",
-      neighborhood: "",
-      number: "",
-      road: "",
-      role: "",
-      state: "",
-      telephone: "",
-      card_number: "",
-      comments: "",
-      cpf: "",
-      full_name: "",
-      rg: "",
-      sex: "",
-      responsible_name: "",
-      responsible_cpf: "",
-      responsible_rg: "",
-      birth_date_responsible: "",
-    },
+    defaultValues: initialValues
   }
   );
   useEffect(() => {
@@ -179,6 +182,12 @@ export function PatientCreate({
     }
   }
 
+  useEffect(() => {
+    if(!openDialog){
+      setEditPayload(null);
+      reset(initialValues);
+    }
+  },[openDialog])
   async function onEditPatient() {
     try {
       for (const key in patient) {
@@ -545,10 +554,9 @@ export function PatientCreate({
                   name="city"
                   control={control}
                   render={({ field, formState }) => (
-                    <SelectInput
-                      field={field}
-                      options={[{ value: "cidade", label: "Cidade" }]}
+                    <InputText 
                       label="Cidade"
+                      {...field}
                       error={formState.errors?.city?.message}
                     />
                   )}
