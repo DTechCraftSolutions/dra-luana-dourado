@@ -1,5 +1,5 @@
 import { PatientProps } from "@/app/routes/pages/patients";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BudgetsRender } from "./tab-contents/patients/budgets";
 import { ArrowLeft } from "lucide-react";
 import { IoArrowBack, IoPencil } from "react-icons/io5";
@@ -7,9 +7,18 @@ import { Treatments } from "./tab-contents/patients/treatments";
 import { DocsComponent } from "./tab-contents/patients/docs";
 import { Button } from "./ui/button";
 
-const PatientDetailTabs = ({ patient, setPatient, setEditPayload, openModal}: { patient: PatientProps, setPatient: any, setEditPayload: any, openModal: any}) => {
+const PatientDetailTabs = ({
+  patient,
+  setPatient,
+  setEditPayload,
+  openModal,
+}: {
+  patient: PatientProps;
+  setPatient: any;
+  setEditPayload: any;
+  openModal: any;
+}) => {
   const [activeTab, setActiveTab] = useState("tab1-data");
-
 
   const TabButton = ({ tabId, label }: { tabId: string; label: string }) => (
     <button
@@ -37,7 +46,10 @@ const PatientDetailTabs = ({ patient, setPatient, setEditPayload, openModal}: { 
   return (
     <div className="w-full flex flex-col gap-2">
       <div className="flex items-center gap-2">
-        <IoArrowBack onClick={() => setPatient(null)} className="text-primary text-2xl hover:bg-primary hover:rounded-full cursor-pointer hover:duration-500 hover:ease-in-out hover:transform hover:opacity-30 hover:text-white" />
+        <IoArrowBack
+          onClick={() => setPatient(null)}
+          className="text-primary text-2xl hover:bg-primary hover:rounded-full cursor-pointer hover:duration-500 hover:ease-in-out hover:transform hover:opacity-30 hover:text-white"
+        />
         <h2 className="text-primary font-bold text-xl ">
           {patient?.full_name}
         </h2>
@@ -75,11 +87,14 @@ const PatientDetailTabs = ({ patient, setPatient, setEditPayload, openModal}: { 
                 }`}
               />
             </div>
-            <Button onClick={() => {
-              setEditPayload(patient)
-              openModal(true)
-            }} className="rounded-full mt-5 gap-2">
-              <IoPencil/>
+            <Button
+              onClick={() => {
+                setEditPayload(patient);
+                openModal(true);
+              }}
+              className="rounded-full mt-5 gap-2"
+            >
+              <IoPencil />
               Editar
             </Button>
           </div>

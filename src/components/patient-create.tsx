@@ -22,9 +22,9 @@ import axios from "axios";
 import { IoAdd } from "react-icons/io5";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Toaster, toast } from "sonner";
-
 // Interface Patient definida anteriormente
 interface Patient {
+  id: string;
   birth_date: string;
   cep: string;
   city: string;
@@ -57,6 +57,7 @@ interface PatientProps {
   setOpenDialog: (value: boolean) => void;
   editPayload: Patient | null | any;
   setEditPayload: any;
+  isEditting: any;
 }
 
 // Schema do paciente utilizando Zod
@@ -85,7 +86,6 @@ const patientSchema = z.object({
   comments_responsible: z.string().optional(),
 });
 
-
 const initialValues = {
   birth_date: "",
   cep: "",
@@ -107,11 +107,12 @@ const initialValues = {
   responsible_cpf: "",
   responsible_rg: "",
   birth_date_responsible: "",
-}
+};
 
 type PatientSchema = z.infer<typeof patientSchema>;
 
 export function PatientCreate({
+  isEditting,
   setCreatedPatient,
   openDialog,
   setOpenDialog,
@@ -129,9 +130,9 @@ export function PatientCreate({
     clearErrors,
   } = useForm<PatientSchema>({
     resolver: zodResolver(patientSchema),
-    defaultValues: initialValues
-  }
-  );
+    defaultValues: initialValues,
+  });
+
   useEffect(() => {
     if (editPayload) {
       setValue("birth_date", editPayload.birth_date);
@@ -158,7 +159,7 @@ export function PatientCreate({
       setValue("comments_responsible", editPayload.comments_responsible);
     }
   }, [editPayload]);
-  var { ...patient }: any = watch()
+  var { ...patient }: any = watch();
   const [cep, birth_date] = watch(["cep", "birth_date"]);
   const [displayResponsibleFields, setDisplayResponsibleFields] =
     useState(false);
@@ -183,15 +184,15 @@ export function PatientCreate({
   }
 
   useEffect(() => {
-    if(!openDialog){
+    if (!openDialog) {
       setEditPayload(null);
       reset(initialValues);
     }
-  },[openDialog])
+  }, [openDialog]);
   async function onEditPatient() {
     try {
       for (const key in patient) {
-        if(patient[key] === editPayload[key]) {
+        if (patient[key] === editPayload[key]) {
           delete patient[key];
         }
       }
@@ -200,10 +201,9 @@ export function PatientCreate({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(patient), // Envia apenas os campos editados
+        body: JSON.stringify({ id: editPayload.id, ...patient }),
       });
       toast.success("Paciente editado com sucesso");
-      console.log("edit:", patient);
     } catch (error) {
       console.log(error);
       toast.error("Erro ao editar paciente");
@@ -211,6 +211,8 @@ export function PatientCreate({
       setOpenDialog(false);
       setCreatedPatient(true);
       setEditPayload(null);
+      isEditting(true);
+      window.location.reload();
     }
   }
   useEffect(() => {
@@ -554,7 +556,7 @@ export function PatientCreate({
                   name="city"
                   control={control}
                   render={({ field, formState }) => (
-                    <InputText 
+                    <InputText
                       label="Cidade"
                       {...field}
                       error={formState.errors?.city?.message}
