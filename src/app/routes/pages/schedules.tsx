@@ -30,13 +30,25 @@ interface ProfessionalProps {
   CRO: string;
 }
 
+interface ScheduleProps {
+  id: string;
+  date: string;
+  status: string;
+  procedureId: string;
+  professionalId: string;
+  patientId: string;
+  availableTimeId: string;
+}
+
 export function Schedules() {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [selectProfessional, setSelectProfessional] = useState<string>("all");
   const [professionals, setProfessionals] = useState<ProfessionalProps[]>([]);
   const [openModal, setOpenModal] = useState(false);
   const [dayWeek, setDayWeek] = useState("");
-  const [scheduleByProfessional, setScheduleByProfessional] = useState<any>([]);
+  const [scheduleByProfessional, setScheduleByProfessional] = useState<
+    ScheduleProps[]
+  >([]);
   const [registeredSchedule, setRegisteredSchedule] = useState(false);
   const formatDate = (date: Date) => format(date, "dd/MM/yyyy");
   const dataFormatada = format(date || new Date(), "EEEE", { locale: ptBR });
@@ -155,7 +167,15 @@ export function Schedules() {
       <div className="schedule-cards gap-2 mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
         {selectProfessional.length > 0 ? (
           scheduleByProfessional.length > 0 ? (
-            scheduleByProfessional.map(() => <ScheduleCard />)
+            scheduleByProfessional.map((schedule) => (
+              <ScheduleCard
+                key={schedule.id}
+                availableTimeId={schedule.availableTimeId}
+                pacientId={schedule.patientId}
+                date={schedule.date}
+                procedureId={schedule.procedureId}
+              />
+            ))
           ) : (
             <div className="text-primary text-sm">
               Nenhum agendamento disponível
