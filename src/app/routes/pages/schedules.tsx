@@ -103,6 +103,7 @@ export function Schedules() {
   useEffect(() => {
     if (date) {
       setSearchDate(date.toISOString());
+      setSearchPlan("");
     }
   }, [date]);
 
@@ -126,7 +127,10 @@ export function Schedules() {
           <h3 className="text-lg font-medium text-primary md:mr-4">
             Pacientes de:
           </h3>
-          <Select onValueChange={(value) => setSearchPlan(value)}>
+          <Select
+            value={searchPlan}
+            onValueChange={(value) => setSearchPlan(value)}
+          >
             <SelectTrigger className="w-full md:w-[180px] rounded-full">
               <SelectValue placeholder="Escolha o convênio" />
             </SelectTrigger>
@@ -176,14 +180,14 @@ export function Schedules() {
       </div>
       <div className="schedule-cards gap-2 mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
         {searchPlan !== "" ? (
-          patient?.filter((patient: any) => patient.role.includes(searchPlan))
+          patient?.filter((patient: any) => patient?.role?.includes(searchPlan))
             .length > 0 ? (
-            scheduleByProfessional.filter((schedule) =>
-              schedule.date.includes(searchDate)
+            scheduleByProfessional?.filter((schedule) =>
+              schedule?.date?.includes(searchDate)
             ).length > 0 ? (
               scheduleByProfessional
-                .filter((schedule) => schedule.date.includes(searchDate))
-                .map((schedule) => (
+                ?.filter((schedule) => schedule?.date?.includes(searchDate))
+                ?.map((schedule) => (
                   <ScheduleCard
                     setPatient={setPatient}
                     key={schedule.id}
@@ -203,12 +207,12 @@ export function Schedules() {
               Nenhum paciente encontrado com esse convênio
             </div>
           )
-        ) : scheduleByProfessional.filter((schedule) =>
+        ) : scheduleByProfessional?.filter((schedule) =>
             schedule.date.includes(searchDate)
           ).length > 0 ? (
           scheduleByProfessional
-            .filter((schedule) => schedule.date.includes(searchDate))
-            .map((schedule) => (
+            ?.filter((schedule) => schedule.date?.includes(searchDate))
+            ?.map((schedule) => (
               <ScheduleCard
                 setPatient={setPatient}
                 key={schedule.id}
