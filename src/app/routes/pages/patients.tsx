@@ -155,7 +155,7 @@ export function Patients() {
           </h3>
 
           {data.length > 0 ? (
-            <div className="mt-4 flex flex-col gap-2">
+            <>
               {data
                 .filter((patient) =>
                   patient.full_name.toLowerCase().includes(search.toLowerCase())
@@ -168,7 +168,14 @@ export function Patients() {
                     handleSelectPatient={handleSelectPatient}
                   />
                 ))}
-            </div>
+              {data.filter((patient) =>
+                patient.full_name.toLowerCase().includes(search.toLowerCase())
+              ).length === 0 && (
+                <p className="text-primary mt-4">
+                  Nenhum paciente encontrado com o nome "{search}"
+                </p>
+              )}
+            </>
           ) : (
             <p className="text-primary mt-4">Nenhum paciente encontrado...</p>
           )}

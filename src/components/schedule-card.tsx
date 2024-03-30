@@ -17,9 +17,11 @@ interface ScheduleCardProps {
   availableTimeId: string;
   procedureId: string;
   date: string;
+  setPatient: any;
 }
 
 export function ScheduleCard({
+  setPatient,
   pacientId,
   availableTimeId,
   date,
@@ -41,6 +43,7 @@ export function ScheduleCard({
 
       const data = await response.json();
       setDataPatient(data.patient);
+      setPatient([data.patient]);
     } catch (error) {
       console.error("Error fetching patients:", error);
       throw error;

@@ -18,7 +18,7 @@ import {
 import { NewSchedule } from "@/forms/new-schedule";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
-import { ptBR } from "date-fns/locale";
+import { da, ptBR } from "date-fns/locale";
 import { IoMdAdd } from "react-icons/io";
 import { getDayOfWeek } from "@/utils/day-week";
 import { Toaster } from "sonner";
@@ -50,6 +50,10 @@ export function Schedules() {
     ScheduleProps[]
   >([]);
   const [registeredSchedule, setRegisteredSchedule] = useState(false);
+  const [searchDate, setSearchDate] = useState<any>("");
+  const [searchPlan, setSearchPlan] = useState<any>("");
+  const [patient, setPatient] = useState<any[]>([]);
+
   const formatDate = (date: Date) => format(date, "dd/MM/yyyy");
   const dataFormatada = format(date || new Date(), "EEEE", { locale: ptBR });
   const CapitalizedWeekDay =
@@ -96,6 +100,12 @@ export function Schedules() {
     }
   }, [selectProfessional, registeredSchedule]);
 
+  useEffect(() => {
+    if (date) {
+      setSearchDate(date.toISOString());
+    }
+  }, [date]);
+
   return (
     <div className="mt-2 w-full px-4">
       <Toaster position="bottom-right" richColors />
@@ -116,13 +126,13 @@ export function Schedules() {
           <h3 className="text-lg font-medium text-primary md:mr-4">
             Pacientes de:
           </h3>
-          <Select>
+          <Select onValueChange={(value) => setSearchPlan(value)}>
             <SelectTrigger className="w-full md:w-[180px] rounded-full">
               <SelectValue placeholder="Escolha o convênio" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="light">Particular</SelectItem>
-              <SelectItem value="dark">Plano</SelectItem>
+              <SelectItem value="particular">Particular</SelectItem>
+              <SelectItem value="plano">Plano</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -165,10 +175,42 @@ export function Schedules() {
         </Dialog>
       </div>
       <div className="schedule-cards gap-2 mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
-        {selectProfessional.length > 0 ? (
-          scheduleByProfessional.length > 0 ? (
-            scheduleByProfessional.map((schedule) => (
+        {searchPlan !== "" ? (
+          patient?.filter((patient: any) => patient.role.includes(searchPlan))
+            .length > 0 ? (
+            scheduleByProfessional.filter((schedule) =>
+              schedule.date.includes(searchDate)
+            ).length > 0 ? (
+              scheduleByProfessional
+                .filter((schedule) => schedule.date.includes(searchDate))
+                .map((schedule) => (
+                  <ScheduleCard
+                    setPatient={setPatient}
+                    key={schedule.id}
+                    availableTimeId={schedule.availableTimeId}
+                    pacientId={schedule.patientId}
+                    date={schedule.date}
+                    procedureId={schedule.procedureId}
+                  />
+                ))
+            ) : (
+              <div className="text-primary text-sm">
+                Nenhum agendamento disponível para a data selecionada
+              </div>
+            )
+          ) : (
+            <div className="text-primary text-sm">
+              Nenhum paciente encontrado com esse convênio
+            </div>
+          )
+        ) : scheduleByProfessional.filter((schedule) =>
+            schedule.date.includes(searchDate)
+          ).length > 0 ? (
+          scheduleByProfessional
+            .filter((schedule) => schedule.date.includes(searchDate))
+            .map((schedule) => (
               <ScheduleCard
+                setPatient={setPatient}
                 key={schedule.id}
                 availableTimeId={schedule.availableTimeId}
                 pacientId={schedule.patientId}
@@ -176,13 +218,10 @@ export function Schedules() {
                 procedureId={schedule.procedureId}
               />
             ))
-          ) : (
-            <div className="text-primary text-sm">
-              Nenhum agendamento disponível
-            </div>
-          )
         ) : (
-          <div className="text-primary text-sm">Selecione o profissional</div>
+          <div className="text-primary text-sm">
+            Nenhum agendamento disponível para a data selecionada
+          </div>
         )}
       </div>
     </div>
