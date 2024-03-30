@@ -1,17 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export function middleware(req: NextRequest, res: NextResponse) {
+export function middleware(req: NextRequest) {
   const token = req.cookies.get("token")?.value;
+  const absoluteUrl = req.nextUrl.origin;
 
-  if (req.nextUrl.pathname === "/login" && !token) {
+  if (req.nextUrl.pathname === "/login") {
+    if (token) {
+      return NextResponse.redirect(`${absoluteUrl}/`);
+    }
     return NextResponse.next();
   }
 
-  if (req.nextUrl.pathname === "/login" && token) {
-    return NextResponse.redirect(new URL("/", req.url));
+  if (!token) {
+    return NextResponse.redirect(`${absoluteUrl}/login`);
   }
+
+  return NextResponse.next();
 }
 
 export const config = {
-  middleware: "all",
+  matcher: ["/", "/login"],
 };
