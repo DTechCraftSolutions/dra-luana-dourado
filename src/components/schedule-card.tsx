@@ -111,7 +111,7 @@ export function ScheduleCard({
   return (
     <Dialog>
       <div className="py-2 text-white gap-2 bg-primary rounded-3xl shadow-md flex flex-col  justify-center items-center">
-        <p>{dataPatient.full_name}</p>
+        <p className="w-4/5 mx-auto text-center">{dataPatient.full_name}</p>
         <p>
           {dataAvailableTime.label} - {getAdjustedTime(dataAvailableTime.label)}
         </p>
