@@ -240,7 +240,8 @@ export function NewSchedule({
       pacientAgendedInDateSchedule.some((item: any) => item === pacient.id) ===
       true
     ) {
-      toast.error("Paciente ja agendado para essa data");
+      toast.error("Paciente ja agendado para essa data")
+      setPacient({id: "", name: ""})
     }
   }, [dayWeek, date, procedure, pacient, professional]);
 
