@@ -71,7 +71,7 @@ export function Professionals() {
   async function registerProfessional() {
     try {
       const response = await fetch(
-        "http://localhost:3333/register-professionals",
+        `${process.env.NEXT_PUBLIC_API_URL}/register-professionals`,
         {
           method: "POST",
           headers: {
@@ -103,7 +103,7 @@ export function Professionals() {
   async function getProfessionals() {
     try {
       const response = await fetch(
-        "http://localhost:3333/find-all-professionals"
+        `${process.env.NEXT_PUBLIC_API_URL}/find-all-professionals`
       );
       const data = await response.json();
       setProfessionals(data.professionals);

@@ -62,7 +62,7 @@ export function Schedules() {
   async function getProfessionals() {
     try {
       const response = await fetch(
-        "http://localhost:3333/find-all-professionals"
+        `${process.env.NEXT_PUBLIC_API_URL}/find-all-professionals`
       );
       const data = await response.json();
       setProfessionals(data.professionals);
@@ -74,7 +74,7 @@ export function Schedules() {
   async function getSchedulesByProfessional() {
     try {
       const response = await fetch(
-        "http://localhost:3333/find-schedule-by-professional",
+        `${process.env.NEXT_PUBLIC_API_URL}/find-schedule-by-professional`,
         {
           method: "POST",
           headers: {

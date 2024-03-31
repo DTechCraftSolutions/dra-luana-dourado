@@ -103,7 +103,7 @@ export function AvailabilityManagement() {
     const endTimes = Array.from(endTimesSet);
 
     try {
-      await fetch("http://localhost:3333/delete-available-times", {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/delete-available-times`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -127,7 +127,7 @@ export function AvailabilityManagement() {
   async function getIdProfessional() {
     try {
       const response = await fetch(
-        "http://localhost:3333/profile-professionals",
+        `${process.env.NEXT_PUBLIC_API_URL}/profile-professionals`,
         {
           headers: {
             Authorization: "Bearer " + Cookies.get("token"),
@@ -147,7 +147,7 @@ export function AvailabilityManagement() {
   function handleAddAvailability() {
     try {
       if (data.length > 0) {
-        fetch("http://localhost:3333/register-available-times", {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/register-available-times`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -174,7 +174,7 @@ export function AvailabilityManagement() {
   async function findAllAvailability() {
     try {
       const response = await fetch(
-        "http://localhost:3333/find-all-available-times"
+        `${process.env.NEXT_PUBLIC_API_URL}/find-all-available-times`
       );
       const data = await response.json();
       setAvailableTimes(data.availableTimes);

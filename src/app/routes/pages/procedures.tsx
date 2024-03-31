@@ -82,7 +82,7 @@ export function Procedures() {
   }
   async function updateProcedure(procedure: ProcedureProps) {
     try {
-      await fetch("http://localhost:3333/update-procedure", {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/update-procedure`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -110,7 +110,7 @@ export function Procedures() {
   }
   async function onDeleteProcedure(procedure: ProcedureProps) {
     try {
-      await fetch("http://localhost:3333/delete-procedure", {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/delete-procedure`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -142,7 +142,7 @@ export function Procedures() {
   async function registerProcedure() {
     clearFields();
     try {
-      await fetch("http://localhost:3333/register-procedure", {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/register-procedure`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -169,7 +169,7 @@ export function Procedures() {
   async function getProfessionals() {
     try {
       const response = await fetch(
-        "http://localhost:3333/find-all-professionals"
+        `${process.env.NEXT_PUBLIC_API_URL}/find-all-professionals`
       );
       const data = await response.json();
       setProfessionals(data.professionals);
@@ -180,7 +180,9 @@ export function Procedures() {
 
   async function getProcedures() {
     try {
-      const response = await fetch("http://localhost:3333/find-all-procedures");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/find-all-procedures`
+      );
       const data = await response.json();
       setProcedures(data.procedures);
     } catch (error) {
@@ -190,7 +192,7 @@ export function Procedures() {
   async function getNameProfessional(id: string) {
     try {
       const response = await fetch(
-        "http://localhost:3333/find-by-name-professionals",
+        `${process.env.NEXT_PUBLIC_API_URL}/find-by-name-professionals`,
         {
           method: "POST",
           headers: {

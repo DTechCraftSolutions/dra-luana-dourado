@@ -25,7 +25,7 @@ export function Header() {
     try {
       const token = Cookies.get("token");
       const response = await fetch(
-        "http://localhost:3333/profile-professionals",
+        `${process.env.NEXT_PUBLIC_API_URL}/profile-professionals`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

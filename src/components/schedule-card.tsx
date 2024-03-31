@@ -33,13 +33,16 @@ export function ScheduleCard({
 
   async function getPatients() {
     try {
-      const response = await fetch("http://localhost:3333/find-by-id-patient", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id: pacientId }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/find-by-id-patient`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: pacientId }),
+        }
+      );
 
       const data = await response.json();
       setDataPatient(data.patient);
@@ -53,7 +56,7 @@ export function ScheduleCard({
   async function getAvailableTime() {
     try {
       const response = await fetch(
-        "http://localhost:3333/find-by-id-available-times",
+        `${process.env.NEXT_PUBLIC_API_URL}/find-by-id-available-times`,
         {
           method: "POST",
           headers: {
@@ -73,7 +76,7 @@ export function ScheduleCard({
   async function getProcedure() {
     try {
       const response = await fetch(
-        "http://localhost:3333/find-by-id-procedure",
+        `${process.env.NEXT_PUBLIC_API_URL}/find-by-id-procedure`,
         {
           method: "POST",
           headers: {

@@ -54,6 +54,8 @@ export function NewSchedule({
   const [dayWeek, setDayWeek] = React.useState("");
   const [steps, setSteps] = React.useState(0);
   const [date, setDate] = React.useState<Date>();
+  const [alreadyPatientCreated, setAlreadyPatientCreated] =
+    React.useState(false);
   const [pacient, setPacient] = React.useState({
     name: "",
     id: "",
@@ -99,11 +101,17 @@ export function NewSchedule({
   }
   function prevStep() {
     setSteps(steps - 1);
+    setPacient({ name: "", id: "" });
+    setAlreadyPatientCreated(false);
+    setProfessional("");
+    setProcedure("");
   }
 
   async function getPatients() {
     try {
-      const response = await fetch("http://localhost:3333/find-all-patient");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/find-all-patient`
+      );
       const data = await response.json();
       setDataPatients(data.patients);
     } catch (error) {
@@ -114,7 +122,7 @@ export function NewSchedule({
   async function getProfessionals() {
     try {
       const response = await fetch(
-        "http://localhost:3333/find-all-professionals"
+        `${process.env.NEXT_PUBLIC_API_URL}/find-all-professionals`
       );
       const data = await response.json();
       setDataProfessionals(data.professionals);
@@ -125,7 +133,9 @@ export function NewSchedule({
 
   async function getProcedures() {
     try {
-      const response = await fetch("http://localhost:3333/find-all-procedures");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/find-all-procedures`
+      );
       const data = await response.json();
       setDataProcedures(data.procedures);
     } catch (error) {
@@ -135,15 +145,18 @@ export function NewSchedule({
 
   async function findByDayWeekAvailability() {
     try {
-      const response = await fetch("http://localhost:3333/find-by-day-week", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          day_of_week: dayWeek,
-        }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/find-by-day-week`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            day_of_week: dayWeek,
+          }),
+        }
+      );
       const data = await response.json();
       setDataAvailables(data.availableTimes);
     } catch (error) {
@@ -153,7 +166,7 @@ export function NewSchedule({
 
   async function registerSchedule() {
     try {
-      await fetch("http://localhost:3333/register-schedule", {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/register-schedule`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -180,7 +193,9 @@ export function NewSchedule({
 
   async function getAllSchedules() {
     try {
-      const response = await fetch("http://localhost:3333/find-schedule");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/find-schedule`
+      );
       const data = await response.json();
       setAllSchedules(data);
     } catch (error) {
@@ -240,8 +255,12 @@ export function NewSchedule({
       pacientAgendedInDateSchedule.some((item: any) => item === pacient.id) ===
       true
     ) {
-      toast.error("Paciente ja agendado para essa data")
-      setPacient({id: "", name: ""})
+      toast.error("Paciente ja agendado para essa data");
+      setAlreadyPatientCreated(true);
+      setPacient({
+        name: "",
+        id: "",
+      });
     }
   }, [dayWeek, date, procedure, pacient, professional]);
 
@@ -355,7 +374,7 @@ export function NewSchedule({
             }
             nextStep();
           }}
-          disabled={disableButtonNext()}
+          disabled={disableButtonNext() || alreadyPatientCreated}
           className="px-4 py-1 mx-auto  text-white bg-primary font-medium shadow-md rounded-full mt-8"
         >
           {steps === 2 ? "Agendar" : "Proximo"}

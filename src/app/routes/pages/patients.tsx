@@ -58,7 +58,7 @@ export function Patients() {
   async function handleSearch(patientName: string) {
     try {
       const response = await fetch(
-        "http://localhost:3333/find-patient-by-name",
+        `${process.env.NEXT_PUBLIC_API_URL}/find-patient-by-name`,
         {
           method: "POST",
           headers: {
@@ -88,7 +88,9 @@ export function Patients() {
 
   async function getPatients() {
     try {
-      const response = await fetch("http://localhost:3333/find-all-patient");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/find-all-patient`
+      );
       const data = await response.json();
       setData(data.patients);
       setPatientSearchList(data.patients);

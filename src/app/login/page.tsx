@@ -21,7 +21,7 @@ export default function Login() {
     password: "",
   });
   const [loading, setLoading] = useState(false);
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3333";
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const router = useRouter();
 
   async function handleLogin(data: DataProps, event: React.FormEvent) {
