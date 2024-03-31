@@ -40,24 +40,22 @@ export default function Login() {
       if (token) {
         Cookies.set("token", token);
         toast.success("Login realizado com sucesso, Seja bem-vindo!");
+        setTimeout(() => {
+          router.push("/");
+        }, 1000);
       }
       if (!token) {
         toast.error("Email ou senha inválidos");
         setLoading(false);
-        return
+        setData({ email: "", password: "" });
+        return;
       }
     } catch (error) {
       console.error(error);
       toast.error("Erro ao realizar o login");
+      setData({ email: "", password: "" });
     } finally {
-      setData({
-        email: "",
-        password: "",
-      });
-      setTimeout(() => {
-        router.push("/");
-        setLoading(false);
-      }, 1000);
+      setLoading(false);
     }
   }
   return (
@@ -88,29 +86,45 @@ export default function Login() {
             className="flex flex-col gap-3"
           >
             <label htmlFor="email">Email</label>
-            <input type="text" className="w-full text-black px-4 rounded-full h-10 border-primary" onChange={(e) => setData({ ...data, email: e.target.value })} id="email" />
+            <input
+              type="text"
+              className="w-full text-black px-4 rounded-full h-10 border-primary"
+              onChange={(e) => setData({ ...data, email: e.target.value })}
+              id="email"
+              value={data.email}
+            />
             <label htmlFor="password">Senha</label>
             <div className=" items-center w-full bg-white rounded-full h-10 border-primary flex">
-              <input className="w-[90%] text-black h-10 rounded-full px-4" type={securityEntry ? "password" : "text"} id="password" onChange={(e) => setData({ ...data, password: e.target.value })} />
-              {
-                securityEntry ? (
-                  <IoMdEye className="text-primary ml-2  w-6 h-6 cursor-pointer" onClick={() => setSecurityEntry(!securityEntry)} />
-                ) : (
-                  <IoMdEyeOff onClick={() => setSecurityEntry(!securityEntry)} className="text-primary ml-2 w-6 h-6 cursor-pointer" />
-                )
-              }
+              <input
+                className="w-[90%] text-black h-10 rounded-full px-4"
+                type={securityEntry ? "password" : "text"}
+                id="password"
+                value={data.password}
+                onChange={(e) => setData({ ...data, password: e.target.value })}
+              />
+              {securityEntry ? (
+                <IoMdEye
+                  className="text-primary ml-2  w-6 h-6 cursor-pointer"
+                  onClick={() => setSecurityEntry(!securityEntry)}
+                />
+              ) : (
+                <IoMdEyeOff
+                  onClick={() => setSecurityEntry(!securityEntry)}
+                  className="text-primary ml-2 w-6 h-6 cursor-pointer"
+                />
+              )}
             </div>
-            <Link href={"/dashboard/schedules"}>
-              <button
-                disabled={loading}
-                onClick={(event) => handleLogin(data, event)}
-                type="submit"
-                className={`w-full bg-white h-14 text-primary font-bold 
-                shadow-md rounded-full mt-8 ${loading ? "" : "hover:opacity-80"}	 transition-all duration-300`}
-              >
-                {loading ? <LoadingIndicator /> : "Entrar"}
-              </button>
-            </Link>
+            <button
+              disabled={loading}
+              onClick={(event) => handleLogin(data, event)}
+              type="submit"
+              className={`w-full bg-white h-14 text-primary font-bold 
+                shadow-md rounded-full mt-8 ${
+                  loading ? "" : "hover:opacity-80"
+                }	 transition-all duration-300`}
+            >
+              {loading ? <LoadingIndicator /> : "Entrar"}
+            </button>
           </form>
         </div>
       </div>
