@@ -189,6 +189,8 @@ export function Schedules() {
                 ?.filter((schedule) => schedule?.date?.includes(searchDate))
                 ?.map((schedule) => (
                   <ScheduleCard
+                    status={schedule.status}
+                    id={schedule.id}
                     setPatient={setPatient}
                     key={schedule.id}
                     availableTimeId={schedule.availableTimeId}
@@ -214,6 +216,8 @@ export function Schedules() {
             ?.filter((schedule) => schedule.date?.includes(searchDate))
             ?.map((schedule) => (
               <ScheduleCard
+                status={schedule.status}
+                id={schedule.id}
                 setPatient={setPatient}
                 key={schedule.id}
                 availableTimeId={schedule.availableTimeId}

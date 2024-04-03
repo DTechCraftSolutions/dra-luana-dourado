@@ -11,16 +11,21 @@ import {
 } from "@/components/ui/dialog";
 import { MoreInfoSchedule } from "./more-info-schedule";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface ScheduleCardProps {
+  id: string;
   pacientId: string;
   availableTimeId: string;
   procedureId: string;
+  status: string;
   date: string;
   setPatient: any;
 }
 
 export function ScheduleCard({
+  status,
+  id,
   setPatient,
   pacientId,
   availableTimeId,
@@ -92,6 +97,27 @@ export function ScheduleCard({
     }
   }
 
+  async function handleConfirm() {
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/update-schedule`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: id,
+          status: "FINALIZADO",
+        }),
+      });
+      toast.success("Agendamento finalizado com sucesso");
+    } catch (error) {
+      toast.error("Erro ao finalizar o agendamento");
+      console.error(error);
+    } finally {
+      window.location.reload();
+    }
+  }
+
   function getAdjustedTime(startTime: string): string {
     const originalTime = new Date(`01/01/2024 ${startTime}`);
 
@@ -118,7 +144,10 @@ export function ScheduleCard({
         <p>
           {dataAvailableTime.label} - {getAdjustedTime(dataAvailableTime.label)}
         </p>
-        <button className="bg-white text-primary gap-2 font-medium rounded-full flex items-center justify-center px-4 ">
+        <button
+          onClick={handleConfirm}
+          className="bg-white text-primary gap-2 font-medium rounded-full flex items-center justify-center px-4 "
+        >
           <FaCheck className="text-primary" />
           Confirmar
         </button>
@@ -131,6 +160,8 @@ export function ScheduleCard({
               Mais informações
             </DialogTitle>
             <MoreInfoSchedule
+              status={status}
+              id={id}
               name={dataPatient.full_name}
               date={date}
               procedure={dataProcedure.name}

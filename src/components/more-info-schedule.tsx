@@ -7,14 +7,19 @@ import {
   SelectValue,
 } from "./ui/select";
 import { format } from "date-fns";
+import { toast } from "sonner";
 
 interface MoreInfoScheduleProps {
+  id: string;
+  status: string;
   name: string;
   procedure: string;
   time: string;
   date: string;
 }
 export function MoreInfoSchedule({
+  status,
+  id,
   name,
   procedure,
   time,
@@ -22,6 +27,30 @@ export function MoreInfoSchedule({
 }: MoreInfoScheduleProps) {
   const [newStatus, setNewStatus] = useState("");
   const formatDate = (date: Date) => format(date, "dd/MM/yyyy");
+
+  async function handleComfirm() {
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/update-schedule`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: id,
+          status: newStatus,
+        }),
+      });
+      toast.success("Agendamento atualizado com sucesso");
+    } catch (error) {
+      console.error(error);
+      toast.error("Erro ao atualizar o agendamento");
+    } finally {
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+    }
+  }
+
   return (
     <div className="w-full h-full flex flex-col  items-center pt-5 text-primary">
       <ul className="w-full flex flex-col gap-3 items-center">
@@ -42,24 +71,30 @@ export function MoreInfoSchedule({
           <p>{formatDate(new Date(date))}</p>
         </li>
         <li>
-          <Select onValueChange={setNewStatus}>
+          <Select
+            defaultValue={status}
+            onValueChange={(value) => setNewStatus(value)}
+          >
             <SelectTrigger className="w-full  rounded-full ">
               <SelectValue placeholder="Escolha uma opção" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="1">Aguardando</SelectItem>
-              <SelectItem value="2">Em atendimento</SelectItem>
-              <SelectItem value="3">Finalizado</SelectItem>
-              <SelectItem value="4">Cancelado</SelectItem>
-              <SelectItem value="5">Reagendado</SelectItem>
-              <SelectItem value="6">Pendente</SelectItem>
+              <SelectItem value="AGUARDANDO">Aguardando</SelectItem>
+              <SelectItem value="EM_ATENDIMENTO">Em atendimento</SelectItem>
+              <SelectItem value="FINALIZADO">Finalizado</SelectItem>
+              <SelectItem value="CANCELADO">Cancelado</SelectItem>
+              <SelectItem value="REAGENDADO">Reagendado</SelectItem>
+              <SelectItem value="PENDENTE">Pendente</SelectItem>
             </SelectContent>
           </Select>
         </li>
       </ul>
       <div className="flex items-center gap-2 mt-5">
         {newStatus !== "" ? (
-          <button className="w-56 hover:opacity-80  hover:duration-500 hover:ease-out h-10 bg-primary rounded-full text-white">
+          <button
+            onClick={handleComfirm}
+            className="w-56 hover:opacity-80  hover:duration-500 hover:ease-out h-10 bg-primary rounded-full text-white"
+          >
             Confirmar alteração
           </button>
         ) : null}
