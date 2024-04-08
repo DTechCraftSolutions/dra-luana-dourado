@@ -25,7 +25,7 @@ export function Aside() {
             path === "pending" ? "text-primary font-medium underline" : ""
           }
         >
-          <Link href="/pending">Pendentes</Link>
+          <Link href="/pending">Inteligência</Link>
         </li>
         <li
           className={
