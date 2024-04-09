@@ -1,23 +1,34 @@
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { number } from "zod";
+import { set } from "date-fns";
 
+
+export interface FaceProps {
+    numero: number;
+    M: string;
+    V: string;
+    D: string;
+    O: string;
+    L: string;
+}
 interface DenteProps {
     numero: number;
+    setDetails: Dispatch<SetStateAction<FaceProps[] | undefined>>
+    details: FaceProps[] | [];
 }
 
-const Dente: React.FC<DenteProps> = ({ numero }) => {
+const Dente: React.FC<DenteProps> = ({ numero, setDetails, details = [] }) => {
     const [modalAberto, setModalAberto] = useState(false);
-    const [procedimento, setProcedimento] = useState("");
-    const [observacao, setObservacao] = useState("");
-    const [descricao, setDescricao] = useState("");
-    const [marcado, setMarcado] = useState(false); // Adicionando estado para marcar o dente
-    const [faceDetails, setFaceDetails] = useState({
-        m: [],
-        v: [],
-        d: [],
-        o: [],
-        l: [],
+    const [tooth, setTooth] = useState({
+        M: "",
+        V: "",
+        D: "",
+        O: "",
+        L: "",
     });
+    const [marcado, setMarcado] = useState(false); // Adicionando estado para marcar o dente
+
 
     const toggleModal = () => {
         setModalAberto(!modalAberto);
@@ -25,17 +36,20 @@ const Dente: React.FC<DenteProps> = ({ numero }) => {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // Lógica para adicionar procedimento, observação e descrição
-        console.log("Procedimento:", procedimento);
-        console.log("Observação:", observacao);
-        console.log("Descrição:", descricao);
-        setProcedimento("");
-        setObservacao("");
-        setDescricao("");
+
+        details.length > 0 ? details.map((detail) => {
+            if (detail.numero === numero) {
+                const newTooth = { ...tooth, numero };
+                const detailsWithoutDente = details.filter((detail) => detail.numero !== numero);
+                setDetails([...detailsWithoutDente, newTooth]);
+                return
+            }
+            setDetails([...details, { ...tooth, numero }]);
+        }) : setDetails([{ ...tooth, numero }]);
+
         setMarcado(true); // Marcando o dente ao adicionar um procedimento
         toggleModal();
     };
-
     return (
         <div className={`inline-block ${marcado ? 'bg-primary' : ''}`}> {/* Adicionando classe condicional para marcar o dente */}
             <button
@@ -59,13 +73,16 @@ const Dente: React.FC<DenteProps> = ({ numero }) => {
                                             <p className="bg-primary flex justify-center items-center ml-2 w-6 h-6 rounded-full text-white">
                                                 {face}
                                             </p>
-                                            <Select>
+                                            
+                                            <Select value={tooth[face]} onValueChange={(value) => {
+                                                setTooth({ ...tooth, [face]: value });
+                                            }}>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Selecione um procedimento" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value={`procedimento${index + 1}`}>Procedimento {index + 1}</SelectItem>
-                                                    <SelectItem value={`procedimento${index + 2}`}>Procedimento {index + 2}</SelectItem>
+                                                    <SelectItem value={`123123`}>Procedimento {index + 1}</SelectItem>
+                                                    <SelectItem value={`232423`}>Procedimento {index + 2}</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                         </div>
@@ -73,15 +90,16 @@ const Dente: React.FC<DenteProps> = ({ numero }) => {
                                 </div>
                             </div>
                             <div className="w-full flex justify-center items-center">
+                                <button onClick={toggleModal} className="bg-zinc-300 hover:opacity-80 text-primary py-2 px-4 rounded-full focus:outline-none focus:shadow-outline ml-2">
+                                    Cancelar
+                                </button>
                                 <button
                                     type="submit"
                                     className="bg-primary hover:opacity-80 text-white py-2 px-4 rounded-full focus:outline-none focus:shadow-outline"
                                 >
                                     Adicionar
                                 </button>
-                                <button onClick={toggleModal} className="bg-zinc-300 hover:opacity-80 text-primary py-2 px-4 rounded-full focus:outline-none focus:shadow-outline ml-2">
-                                    Cancelar
-                                </button>
+
                             </div>
                         </form>
                     </div>
@@ -91,17 +109,18 @@ const Dente: React.FC<DenteProps> = ({ numero }) => {
     );
 };
 
-const Odontograma: React.FC = () => {
+
+const Odontograma: React.FC<DenteProps> = ({ setDetails, details }) => {
     return (
         <div className="flex flex-col items-center">
             <div className="flex flex-wrap justify-center space-x-4">
                 {[...Array(16)].map((_, index) => (
-                    <Dente key={index} numero={index + 1} />
+                    <Dente setDetails={setDetails} details={details} key={index} numero={index + 1} />
                 ))}
             </div>
             <div className="flex flex-wrap justify-center space-x-4">
                 {[...Array(16)].map((_, index) => (
-                    <Dente key={index + 16} numero={32 - index} />
+                    <Dente setDetails={setDetails} details={details} key={index + 16} numero={32 - index} />
                 ))}
             </div>
         </div>

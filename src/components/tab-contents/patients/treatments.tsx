@@ -1,5 +1,5 @@
 import { EvolutionComponent } from "@/components/evolution";
-import Odontograma from "@/components/odontogram";
+import Odontograma, { FaceProps } from "@/components/odontogram";
 import { Button } from "@/components/ui/button";
 import { DatePickerDemo } from "@/components/ui/date-picker";
 import { DialogFooter, DialogHeader } from "@/components/ui/dialog";
@@ -9,8 +9,11 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } 
 import { useState } from "react";
 import { IoAdd, IoClose, IoPrint } from "react-icons/io5";
 
+
+
 export function Treatments() {
     const [newTreatment, setNewTreatment] = useState(false);
+    const [faceDetails, setFaceDetails] = useState<FaceProps[]>()
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="col-span-2">
@@ -40,7 +43,7 @@ export function Treatments() {
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div>
+                            <div className="col-span-2">
                                 <label className="text-primary" htmlFor="">
                                     Tratamento
                                 </label>
@@ -50,18 +53,21 @@ export function Treatments() {
                                 <label className="text-primary" htmlFor="">
                                     Valor R$
                                 </label>
-                                <input type="text" className="w-full border px-2 border-primary h-10 rounded-full bg-transparent focus:outline-primary" />
+                                <input disabled value="250,00" type="text" className="w-full border px-2 border-primary h-10 rounded-full bg-transparent focus:outline-primary" />
                             </div>
                         </div>
                         <div className="my-4">
-                            <Odontograma />
+                            <Odontograma setDetails={setFaceDetails} details={faceDetails} />
                         </div>
                         <div className="flex justify-between">
-                            <Button className="bg-zinc-300 hover:opacity-90 hover:bg-zinc-300 hover:duration-500 hover:ease-in-out text-primary mt-4 rounded-full">
+                            <Button
+                            onClick={() => setNewTreatment(false)}
+                            className="bg-zinc-300 hover:opacity-90 hover:bg-zinc-300 hover:duration-500 hover:ease-in-out text-primary mt-4 rounded-full">
                                 <IoClose className="text-2xl" />
                                 Cancelar
                             </Button>
-                            <Button className="bg-green-600 hover:opacity-90 hover:bg-green-600 hover:duration-500 hover:ease-in-out text-white mt-4 rounded-full">
+                            <Button
+                             className="bg-green-600 hover:opacity-90 hover:bg-green-600 hover:duration-500 hover:ease-in-out text-white mt-4 rounded-full">
                                 <IoAdd className="text-2xl" />
                                 Adicionar
                             </Button>
@@ -96,7 +102,7 @@ export function Treatments() {
                             <DialogDescription>
                                 <div className="flex flex-col">
                                     <label htmlFor="">Data</label>
-                                    <DatePickerDemo date={new Date()} setDate={() => { }} />
+                                    <DatePickerDemo setDayWeek={() => { }} date={new Date()} setDate={() => { }} />
                                 </div>
                                 <div>
                                     <label htmlFor="">Tratamento</label>
