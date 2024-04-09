@@ -140,12 +140,20 @@ export function Schedules() {
             </SelectContent>
           </Select>
         </div>
+        <Select>
+          <SelectTrigger className="w-full md:w-[200px] rounded-full">
+            <SelectValue placeholder="Procedimento" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos</SelectItem>
+          </SelectContent>
+        </Select>
         <div>
           <Select
             onValueChange={(value) => setSelectProfessional(value)}
             defaultValue="all"
           >
-            <SelectTrigger className="w-full md:w-[300px] rounded-full">
+            <SelectTrigger className="w-full md:w-[200px] rounded-full">
               <SelectValue placeholder="Selecione o profissional" />
             </SelectTrigger>
             <SelectContent>
@@ -210,8 +218,8 @@ export function Schedules() {
             </div>
           )
         ) : scheduleByProfessional?.filter((schedule) =>
-            schedule.date.includes(searchDate)
-          ).length > 0 ? (
+          schedule.date.includes(searchDate)
+        ).length > 0 ? (
           scheduleByProfessional
             ?.filter((schedule) => schedule.date?.includes(searchDate))
             ?.map((schedule) => (

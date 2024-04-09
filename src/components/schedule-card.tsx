@@ -12,6 +12,7 @@ import {
 import { MoreInfoSchedule } from "./more-info-schedule";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { IoMdClose } from "react-icons/io";
 
 interface ScheduleCardProps {
   id: string;
@@ -144,13 +145,27 @@ export function ScheduleCard({
         <p>
           {dataAvailableTime.label} - {getAdjustedTime(dataAvailableTime.label)}
         </p>
-        <button
-          onClick={handleConfirm}
-          className="bg-white text-primary gap-2 font-medium rounded-full flex items-center justify-center px-4 "
-        >
-          <FaCheck className="text-primary" />
-          Confirmar
-        </button>
+        {
+          status === "FINALIZADO" ? (
+            <div className="flex items-center gap-2 mx-auto text-center">
+              <FaCheck className="text-green-500" />
+              Finalizado
+            </div>
+          )
+            : status === "CANCELADO" ? (
+              <div className="mx-auto flex items-center gap-2 text-center">
+                <IoMdClose className="text-red-500" />
+                Cancelado
+              </div>
+            )
+              : <button
+                onClick={handleConfirm}
+                className="bg-white text-primary gap-2 font-medium rounded-full flex items-center justify-center px-4 "
+              >
+                <FaCheck className="text-primary" />
+                Confirmar
+              </button>
+        }
         <DialogTrigger className="underline text-xs">
           Mais informações
         </DialogTrigger>
