@@ -29,12 +29,13 @@ import {
 import { set } from "date-fns";
 import { useEffect, useState } from "react";
 import { FaEdit } from "react-icons/fa";
-import { FaCheck } from "react-icons/fa6";
+import { FaCheck, FaTrash } from "react-icons/fa6";
 import { IoMdAdd } from "react-icons/io";
 import { IoArrowBack, IoClose } from "react-icons/io5";
 import { Toaster, toast } from "sonner";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 interface ProfessionalProps {
   name: string;
@@ -261,6 +262,31 @@ export function Professionals() {
                     {selectedProfessional.email}
                   </TableCell>
                   <TableCell className="flex justify-end">
+                    <Dialog>
+                      <DialogTrigger>
+                        <Button className="rounded-full text-red-500" variant={"outline"}>
+                          <FaTrash />
+                          Remover
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>
+                            Tem certeza que deseja remover o profissional?
+                          </DialogTitle>
+                        </DialogHeader>
+                        <div className="flex items-center justify-center gap-2 mt-4">
+                          <DialogClose>
+                            <Button className="rounded-full" variant={"outline"}>Cancelar</Button>
+                          </DialogClose>
+                          <Button className="rounded-full" variant={"destructive"}
+                          >
+                            <FaTrash />
+                            Remover
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                     <button
                       onClick={() => {
                         setEditing(true);

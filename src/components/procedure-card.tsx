@@ -49,7 +49,7 @@ export function ProcedureCard({
   }
 
   return (
-    <div className="w-72 h-36 shadow-md rounded-3xl p-4 bg-white">
+    <div className="w-72 shadow-md rounded-3xl p-4 bg-white">
       <div className="flex items-center mb-5 justify-between">
         <h2 className="font-bold text-primary">{procedure}</h2>
         <div
