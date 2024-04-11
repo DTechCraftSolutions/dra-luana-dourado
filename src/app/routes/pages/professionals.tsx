@@ -38,6 +38,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 interface ProfessionalProps {
+  id: string;
   name: string;
   email: string;
   office: string;
@@ -63,6 +64,7 @@ export function Professionals() {
   const [editing, setEditing] = useState(false);
   const [editingProfessionalCredentials, setEditingProfessionalCredentials] =
     useState<ProfessionalProps>({
+      id: "",
       name: "",
       email: "",
       office: "",
@@ -71,22 +73,19 @@ export function Professionals() {
 
   async function registerProfessional() {
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/register-professionals`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name,
-            email,
-            office,
-            CRO: CRO === "" ? undefined : CRO,
-            password,
-          }),
-        }
-      );
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/register-professionals`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          office,
+          CRO: CRO === "" ? undefined : CRO,
+          password,
+        }),
+      });
       toast.success("Profissional registrado com sucesso!");
     } catch (error) {
       toast.error("Erro ao registrar o profissional");
@@ -101,6 +100,34 @@ export function Professionals() {
     }
   }
 
+  async function editProfessional() {
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/update-professionals`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: editingProfessionalCredentials.id,
+          name: editingProfessionalCredentials.name,
+          email: editingProfessionalCredentials.email,
+          office: editingProfessionalCredentials.office,
+          CRO: editingProfessionalCredentials.CRO,
+        }),
+      });
+      toast.success("Profissional editado com sucesso!");
+    } catch (error) {
+      toast.error("Erro ao editar o profissional");
+      console.error("Error editing professional:", error);
+    } finally {
+      getProfessionals();
+      setTimeout(() => {
+        setEditing(false);
+        window.location.reload();
+      }, 1000);
+    }
+  }
+
   async function getProfessionals() {
     try {
       const response = await fetch(
@@ -112,6 +139,28 @@ export function Professionals() {
       console.error("Error fetching professionals:", error);
     }
   }
+
+  async function deleteProfessional() {
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/delete-professionals`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: editingProfessionalCredentials.id }),
+      });
+      toast.success("Profissional excluido com sucesso!");
+    } catch (error) {
+      toast.error("Erro ao excluir o profissional");
+      console.error("Error deleting professional:", error);
+    } finally {
+      getProfessionals();
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    }
+  }
+
   useEffect(() => {
     getProfessionals();
   }, []);
@@ -264,7 +313,19 @@ export function Professionals() {
                   <TableCell className="flex justify-end">
                     <Dialog>
                       <DialogTrigger>
-                        <Button className="rounded-full text-red-500" variant={"outline"}>
+                        <Button
+                          onClick={() =>
+                            setEditingProfessionalCredentials({
+                              id: selectedProfessional.id,
+                              name: selectedProfessional.name,
+                              office: selectedProfessional.office,
+                              CRO: selectedProfessional.CRO,
+                              email: selectedProfessional.email,
+                            })
+                          }
+                          className="rounded-full text-red-500"
+                          variant={"outline"}
+                        >
                           <FaTrash />
                           Remover
                         </Button>
@@ -277,9 +338,17 @@ export function Professionals() {
                         </DialogHeader>
                         <div className="flex items-center justify-center gap-2 mt-4">
                           <DialogClose>
-                            <Button className="rounded-full" variant={"outline"}>Cancelar</Button>
+                            <Button
+                              className="rounded-full"
+                              variant={"outline"}
+                            >
+                              Cancelar
+                            </Button>
                           </DialogClose>
-                          <Button className="rounded-full" variant={"destructive"}
+                          <Button
+                            className="rounded-full"
+                            variant={"destructive"}
+                            onClick={() => deleteProfessional()}
                           >
                             <FaTrash />
                             Remover
@@ -291,6 +360,7 @@ export function Professionals() {
                       onClick={() => {
                         setEditing(true);
                         setEditingProfessionalCredentials({
+                          id: selectedProfessional.id,
                           name: selectedProfessional.name,
                           office: selectedProfessional.office,
                           CRO: selectedProfessional.CRO,
@@ -382,7 +452,7 @@ export function Professionals() {
                     </button>
                     <button
                       onClick={() => {
-                        setEditing(false);
+                        editProfessional();
                       }}
                       className="bg-primary px-5  flex items-center  text-white rounded-full py-2 jsutify-center gap-2 hover:opacity-80 hover:duration-1000 hover:ease-out"
                     >
