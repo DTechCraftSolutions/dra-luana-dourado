@@ -40,6 +40,17 @@ interface ScheduleProps {
   availableTimeId: string;
 }
 
+interface ProcedureProps {
+  id: string;
+  name: string;
+  description: string;
+  recurrence: string;
+  price: number;
+  professionalId: string;
+  duration: string;
+  color: string;
+}
+
 export function Schedules() {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [selectProfessional, setSelectProfessional] = useState<string>("all");
@@ -53,12 +64,24 @@ export function Schedules() {
   const [searchDate, setSearchDate] = useState<any>("");
   const [searchPlan, setSearchPlan] = useState<any>("");
   const [patient, setPatient] = useState<any[]>([]);
+  const [procedures, setProcedures] = useState<ProcedureProps[]>([]);
+  const [selectedProcedure, setSelectedProcedure] = useState<string>("all");
 
   const formatDate = (date: Date) => format(date, "dd/MM/yyyy");
   const dataFormatada = format(date || new Date(), "EEEE", { locale: ptBR });
   const CapitalizedWeekDay =
     dataFormatada.charAt(0).toUpperCase() + dataFormatada.slice(1);
 
+  let filteredSchedules = scheduleByProfessional
+    ?.filter(
+      (schedule) =>
+        schedule?.date?.includes(searchDate) && schedule.date !== null
+    )
+    ?.filter(
+      (schedule) =>
+        selectedProcedure === "all" ||
+        selectedProcedure.includes(schedule.procedureId)
+    );
   async function getProfessionals() {
     try {
       const response = await fetch(
@@ -90,8 +113,21 @@ export function Schedules() {
     }
   }
 
+  async function getAllProcedures() {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/find-all-procedures`
+      );
+      const data = await response.json();
+      setProcedures(data.procedures);
+    } catch (error) {
+      console.error("Error fetching procedures:", error);
+    }
+  }
+
   useEffect(() => {
     getProfessionals();
+    getAllProcedures();
   }, []);
 
   useEffect(() => {
@@ -140,12 +176,20 @@ export function Schedules() {
             </SelectContent>
           </Select>
         </div>
-        <Select>
+        <Select
+          value={selectedProcedure}
+          onValueChange={(value) => setSelectedProcedure(value)}
+        >
           <SelectTrigger className="w-full md:w-[200px] rounded-full">
             <SelectValue placeholder="Procedimento" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todos</SelectItem>
+            {procedures.map((procedure) => (
+              <SelectItem key={procedure.id} value={procedure.id}>
+                {procedure.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <div>
@@ -190,23 +234,19 @@ export function Schedules() {
         {searchPlan !== "" ? (
           patient?.filter((patient: any) => patient?.role?.includes(searchPlan))
             .length > 0 ? (
-            scheduleByProfessional?.filter((schedule) =>
-              schedule?.date?.includes(searchDate)
-            ).length > 0 ? (
-              scheduleByProfessional
-                ?.filter((schedule) => schedule?.date?.includes(searchDate))
-                ?.map((schedule) => (
-                  <ScheduleCard
-                    status={schedule.status}
-                    id={schedule.id}
-                    setPatient={setPatient}
-                    key={schedule.id}
-                    availableTimeId={schedule.availableTimeId}
-                    pacientId={schedule.patientId}
-                    date={schedule.date}
-                    procedureId={schedule.procedureId}
-                  />
-                ))
+            filteredSchedules.length > 0 ? (
+              filteredSchedules.map((schedule) => (
+                <ScheduleCard
+                  status={schedule.status}
+                  id={schedule.id}
+                  setPatient={setPatient}
+                  key={schedule.id}
+                  availableTimeId={schedule.availableTimeId}
+                  pacientId={schedule.patientId}
+                  date={schedule.date}
+                  procedureId={schedule.procedureId}
+                />
+              ))
             ) : (
               <div className="text-primary text-sm">
                 Nenhum agendamento disponível para a data selecionada
@@ -217,23 +257,23 @@ export function Schedules() {
               Nenhum paciente encontrado com esse convênio
             </div>
           )
-        ) : scheduleByProfessional?.filter((schedule) =>
-          schedule.date.includes(searchDate)
-        ).length > 0 ? (
-          scheduleByProfessional
-            ?.filter((schedule) => schedule.date?.includes(searchDate))
-            ?.map((schedule) => (
-              <ScheduleCard
-                status={schedule.status}
-                id={schedule.id}
-                setPatient={setPatient}
-                key={schedule.id}
-                availableTimeId={schedule.availableTimeId}
-                pacientId={schedule.patientId}
-                date={schedule.date}
-                procedureId={schedule.procedureId}
-              />
-            ))
+        ) : selectedProcedure !== "all" && filteredSchedules.length === 0 ? (
+          <div className="text-primary text-sm">
+            Nenhum agendamento disponível para o procedimento selecionado
+          </div>
+        ) : filteredSchedules.length > 0 ? (
+          filteredSchedules.map((schedule) => (
+            <ScheduleCard
+              status={schedule.status}
+              id={schedule.id}
+              setPatient={setPatient}
+              key={schedule.id}
+              availableTimeId={schedule.availableTimeId}
+              pacientId={schedule.patientId}
+              date={schedule.date}
+              procedureId={schedule.procedureId}
+            />
+          ))
         ) : (
           <div className="text-primary text-sm">
             Nenhum agendamento disponível para a data selecionada
