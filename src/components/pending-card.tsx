@@ -61,7 +61,7 @@ export function PendingCard({ procedureId, pacientId }: PendingCardProps) {
   }, []);
 
   return (
-    <div className="w-full h-16 bg-rose-100 rounded-lg shadow-md p-4 flex justify-between items-center">
+    <div className="w-full  bg-rose-100 rounded-lg shadow-md p-4 flex justify-between items-center">
       <div>
         <p className="text-primary font-medium">{dataPacient.full_name}</p>
         <p className="text-primary">{dataProcedure.name}</p>

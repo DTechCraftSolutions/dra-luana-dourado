@@ -280,7 +280,7 @@ export function NewSchedule({
       {steps === 1 && (
         <div>
           <h2 className="font-medium">Preencha os dados abaixo:</h2>
-          <label htmlFor="">Paciente</label>
+          <label className="font-medium mb-2" htmlFor="">Paciente</label>
           <Autosuggest
             suggestions={suggestions}
             onSuggestionsFetchRequested={({ value }) =>
@@ -305,8 +305,8 @@ export function NewSchedule({
             onSuggestionSelected={onSuggestionSelected}
           />
           <div className="flex items-center gap-2">
-            <div>
-              <label htmlFor="">Profissional</label>
+            <div className="mt-2">
+              <label className="font-medium" htmlFor="">Profissional</label>
               <Select onValueChange={setProfessional}>
                 <SelectTrigger className="w-full md:w-[180px] bg-primary rounded-full text-white">
                   <SelectValue placeholder="Escolha" />
@@ -358,7 +358,7 @@ export function NewSchedule({
           </Select>
         </div>
       )}
-      <div className="flex justify-center items-center">
+      <div className="flex justify-center gap-2 items-center">
         {steps !== 0 && (
           <button
             onClick={prevStep}

@@ -140,7 +140,7 @@ export function Plans() {
             </div>
             {/* Diálogo para registro e edição de planos ortodônticos */}
             <Dialog open={openRegister} onOpenChange={setOpenRegister}>
-                <DialogTrigger className="mt-4 md:mt-5 px-14 py-2 bg-green-600 flex items-center gap-2 rounded-full  text-white font-semibold hover:opacity-90 transition-opacity duration-300">
+                <DialogTrigger className="mt-4 md:mt-5 px-14 py-2 bg-green-400 flex items-center gap-2 rounded-full  text-white font-semibold hover:bg-green-600  duration-500">
                     <IoAdd />
                     Cadastrar novo
                 </DialogTrigger>

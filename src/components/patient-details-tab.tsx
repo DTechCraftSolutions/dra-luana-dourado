@@ -66,7 +66,6 @@ const PatientDetailTabs = ({
           <div>
             <div>
               <PatientDataItem label="Celular" value={patient?.telephone} />
-              <PatientDataItem label="Identificador" value={patient?.id} />
               <PatientDataItem label="CPF" value={patient?.cpf} />
               <PatientDataItem label="RG" value={patient?.rg} />
               <PatientDataItem

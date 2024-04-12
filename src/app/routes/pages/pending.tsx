@@ -156,8 +156,8 @@ export function Pending() {
         </h2>
       </div>
       <div className="flex w-full justify-between mt-4 items-center">
-        <div className="flex items-center gap-5">
-          <h3 className="text-primary">Pacientes de:</h3>
+        <div className="">
+          <h3 className="text-primary font-medium mb-2">Pacientes de:</h3>
           <Select>
             <SelectTrigger className="w-full md:w-[180px] rounded-full">
               <SelectValue placeholder="Escolha o convênio" />
@@ -169,39 +169,45 @@ export function Pending() {
             </SelectContent>
           </Select>
         </div>
-        <Select
-          value={selectProfessional}
-          onValueChange={setSelectProfessional}
-        >
-          <SelectTrigger className="w-full md:w-[300px] rounded-full">
-            <SelectValue placeholder="Escolha o Profissional" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
-            {professionals.map((professional) => (
-              <SelectItem key={professional.CRO} value={professional.id}>
-                {professional.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div>
+          <h3 className="text-primary font-medium mb-2">Filtrar por profissional</h3>
+          <Select
+            value={selectProfessional}
+            onValueChange={setSelectProfessional}
+          >
+            <SelectTrigger className="w-full md:w-[300px] rounded-full">
+              <SelectValue placeholder="Escolha o Profissional" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos</SelectItem>
+              {professionals.map((professional) => (
+                <SelectItem key={professional.CRO} value={professional.id}>
+                  {professional.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        <Select
-          value={selectedProcedure}
-          onValueChange={(value) => setSelectedProcedure(value)}
-        >
-          <SelectTrigger className="w-full md:w-[200px] rounded-full">
-            <SelectValue placeholder="Procedimento" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
-            {procedures.map((procedure) => (
-              <SelectItem key={procedure.id} value={procedure.id}>
-                {procedure.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        </div>
+        <div>
+          <h3 className="text-primary font-medium mb-2">Filtrar por procedimento</h3>
+          <Select
+            value={selectedProcedure}
+            onValueChange={(value) => setSelectedProcedure(value)}
+          >
+            <SelectTrigger className="w-full md:w-[200px] rounded-full">
+              <SelectValue placeholder="Procedimento" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos</SelectItem>
+              {procedures.map((procedure) => (
+                <SelectItem key={procedure.id} value={procedure.id}>
+                  {procedure.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       <div className="flex w-96 mt-4  justify-end items-center">
         <input

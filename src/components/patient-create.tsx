@@ -237,7 +237,7 @@ export function PatientCreate({
     <div className="w-full flex mt-4 mb-4">
       <Toaster position="bottom-right" richColors />
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogTrigger className="mt-4 md:mt-0 px-14 py-2 bg-green-600 rounded-full flex items-center gap-2 text-white font-semibold hover:opacity-90 transition-opacity duration-300">
+        <DialogTrigger className="mt-4 md:mt-0 px-14 py-2 bg-green-400 rounded-full flex items-center gap-2 text-white font-semibold hover:bg-green-600  duration-500">
           <IoAdd className="w-5 h-5" />
           Cadastrar novo
         </DialogTrigger>

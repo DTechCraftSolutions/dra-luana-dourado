@@ -164,6 +164,7 @@ export function Patients() {
                 )
                 .map((patient) => (
                   <PatientSearchedCard
+                    telephone={patient.telephone}
                     key={patient.id}
                     name={patient.full_name}
                     id={patient.id}

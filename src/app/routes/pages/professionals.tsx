@@ -169,7 +169,7 @@ export function Professionals() {
       <Toaster position="bottom-right" richColors />
       <h2 className="text-primary font-bold text-xl">Profissionais</h2>
       <Dialog>
-        <DialogTrigger className="mt-4 md:mt-10 px-14 py-2 bg-green-600 flex items-center gap-2 rounded-full  text-white font-semibold hover:opacity-90 transition-opacity duration-300">
+        <DialogTrigger className="mt-4 md:mt-10 px-14 py-2 bg-green-400 flex items-center gap-2 rounded-full  text-white font-semibold hover:bg-green-600 duration-500">
           <IoMdAdd />
           Cadastrar novo
         </DialogTrigger>

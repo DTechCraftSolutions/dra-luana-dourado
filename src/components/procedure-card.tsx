@@ -49,8 +49,8 @@ export function ProcedureCard({
   }
 
   return (
-    <div className="w-72 shadow-md rounded-3xl p-4 bg-white">
-      <div className="flex items-center mb-5 justify-between">
+    <div className="w-72 flex flex-col justify-between shadow-md rounded-3xl p-4 bg-white">
+      <div className="flex items-start mb-5 justify-between">
         <h2 className="font-bold text-primary">{procedure}</h2>
         <div
           style={{ backgroundColor: color }}

@@ -4,7 +4,9 @@ import Image from "next/image";
 import { details } from "../../details";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-
+import { FaBookMedical, FaClock, FaSyringe, FaUserDoctor } from "react-icons/fa6";
+import { IoEye, IoPerson } from "react-icons/io5";
+import {RiHealthBookFill} from "react-icons/ri"
 export function Aside() {
   const path = useParams().id;
   return (
@@ -17,50 +19,58 @@ export function Aside() {
         height={100}
       />
       <ul className="flex flex-col gap-4 text-primary mt-8">
-        <li className={!path ? "text-primary font-medium underline" : ""}>
-          <Link href="/">Agenda</Link>
+        <li className={!path ? "text-primary font-medium bg-blue-100 items-center rounded-lg duration-500 p-2 flex gap-2" : "p-2 rounded-lg flex hover:bg-blue-100 duration-500 items-center gap-2"}>
+          <FaBookMedical />
+          <Link className="w-full h-full" href="/">Agenda</Link>
         </li>
         <li
           className={
-            path === "pending" ? "text-primary font-medium underline" : ""
-          }
+            path === "pending" ? "text-primary font-medium bg-blue-100 items-center rounded-lg duration-500 p-2 flex gap-2" : "p-2 rounded-lg flex hover:bg-blue-100 duration-500 items-center gap-2"          }
         >
-          <Link href="/pending">Inteligência</Link>
+          <IoEye className="text-xl" />
+          <Link className="w-full h-full" href="/pending">Inteligência</Link>
         </li>
         <li
           className={
-            path === "patients" ? "text-primary font-medium underline" : ""
+            path === "patients" ? "text-primary font-medium bg-blue-100 items-center rounded-lg duration-500 p-2 flex gap-2" : "p-2 rounded-lg flex hover:bg-blue-100 duration-500 items-center gap-2"
           }
         >
-          <Link href="/patients">Pacientes</Link>
+          <IoPerson className="text-xl" />
+          <Link className="w-full h-full" href="/patients">Pacientes</Link>
         </li>
         <li
           className={
-            path === "professionals" ? "text-primary font-medium underline" : ""
+            path === "professionals" ? "text-primary font-medium bg-blue-100 items-center rounded-lg duration-500 p-2 flex gap-2" : "p-2 rounded-lg flex hover:bg-blue-100 duration-500 items-center gap-2"
           }
         >
-          <Link href="/professionals">Profissionais</Link>
+          <FaUserDoctor />
+          <Link className="w-full h-full" href="/professionals">Profissionais</Link>
         </li>
         <li
           className={
-            path === "availability" ? "text-primary font-medium underline" : ""
+            path === "availability" ? "text-primary font-medium bg-blue-100 items-center rounded-lg duration-500 p-2 flex gap-2" : "p-2 rounded-lg flex hover:bg-blue-100 duration-500 items-center gap-2"
           }
         >
-          <Link href="/availability">Disponibilidade</Link>
+          <FaClock />
+          <Link className="w-full h-full" href="/availability">Disponibilidade</Link>
         </li>
         <li
           className={
-            path === "procedures" ? "text-primary font-medium underline" : ""
+            path === "procedures" ? "text-primary font-medium bg-blue-100 items-center rounded-lg duration-500 p-2 flex gap-2" : "p-2 rounded-lg flex hover:bg-blue-100 duration-500 items-center gap-2"
           }
         >
-          <Link href="/procedures">Procedimentos</Link>
+          <FaSyringe />
+
+          <Link className="w-full h-full" href="/procedures">Procedimentos</Link>
         </li>
         <li
           className={
-            path === "plans" ? "text-primary font-medium underline" : ""
+            path === "plans" ? "text-primary font-medium bg-blue-100 items-center rounded-lg duration-500 p-2 flex gap-2" : "p-2 rounded-lg flex hover:bg-blue-100 duration-500 items-center gap-2"
           }
         >
-          <Link href="/plans">Planos</Link>
+          <RiHealthBookFill />
+
+          <Link className="w-full h-full" href="/plans">Planos</Link>
         </li>
       </ul>
     </aside>

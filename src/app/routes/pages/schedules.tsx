@@ -158,16 +158,16 @@ export function Schedules() {
           </span>
         </h2>
       </div>
-      <div className="w-full flex flex-col md:flex-row items-center mt-4 justify-between">
-        <div className="flex flex-col md:flex-row items-center gap-5">
-          <h3 className="text-lg font-medium text-primary md:mr-4">
-            Pacientes de:
+      <div className="w-full flex md:items-end flex-col md:flex-row items-center mt-4 justify-between">
+        <div className="">
+          <h3 className=" font-medium text-primary">
+            Filtrar por plano
           </h3>
           <Select
             value={searchPlan}
             onValueChange={(value) => setSearchPlan(value)}
           >
-            <SelectTrigger className="w-full md:w-[180px] rounded-full">
+            <SelectTrigger className="w-full mt-2 md:w-[180px] rounded-full">
               <SelectValue placeholder="Escolha o convênio" />
             </SelectTrigger>
             <SelectContent>
@@ -176,28 +176,32 @@ export function Schedules() {
             </SelectContent>
           </Select>
         </div>
-        <Select
-          value={selectedProcedure}
-          onValueChange={(value) => setSelectedProcedure(value)}
-        >
-          <SelectTrigger className="w-full md:w-[200px] rounded-full">
-            <SelectValue placeholder="Procedimento" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
-            {procedures.map((procedure) => (
-              <SelectItem key={procedure.id} value={procedure.id}>
-                {procedure.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
         <div>
+          <label className="text-primary font-medium" htmlFor="">Filtrar por procedimento:</label>
+          <Select
+            value={selectedProcedure}
+            onValueChange={(value) => setSelectedProcedure(value)}
+          >
+            <SelectTrigger className="w-full mt-2 md:w-[200px] rounded-full">
+              <SelectValue placeholder="Procedimento" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos</SelectItem>
+              {procedures.map((procedure) => (
+                <SelectItem key={procedure.id} value={procedure.id}>
+                  {procedure.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <label className="text-primary font-medium" htmlFor="">Filtrar por profissional:</label>
           <Select
             onValueChange={(value) => setSelectProfessional(value)}
             defaultValue="all"
           >
-            <SelectTrigger className="w-full md:w-[200px] rounded-full">
+            <SelectTrigger className="w-full mt-2 md:w-[200px] rounded-full">
               <SelectValue placeholder="Selecione o profissional" />
             </SelectTrigger>
             <SelectContent>
@@ -211,7 +215,7 @@ export function Schedules() {
           </Select>
         </div>
         <Dialog open={openModal} onOpenChange={setOpenModal}>
-          <DialogTrigger className="mt-4 md:mt-0 px-4 py-2 flex items-center gap-2 bg-green-600 rounded-full text-white font-semibold">
+          <DialogTrigger className="mt-4 md:mt-0 px-4 py-2 flex items-center gap-2 bg-green-400 hover:bg-green-600 duration-500 rounded-full text-white font-semibold">
             <IoMdAdd />
             Agendar novo
           </DialogTrigger>
