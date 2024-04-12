@@ -11,9 +11,14 @@ import { useEffect, useState } from "react";
 interface PendingCardProps {
   procedureId: string;
   pacientId: string;
+  setPatient: any;
 }
 
-export function PendingCard({ procedureId, pacientId }: PendingCardProps) {
+export function PendingCard({
+  procedureId,
+  pacientId,
+  setPatient,
+}: PendingCardProps) {
   const [dataProcedure, setDataProcedure] = useState<any>([]);
   const [dataPacient, setDataPacient] = useState<any>([]);
 
@@ -31,6 +36,7 @@ export function PendingCard({ procedureId, pacientId }: PendingCardProps) {
       );
       const data = await response.json();
       setDataPacient(data.patient);
+      setPatient([data.patient]);
     } catch (error) {
       throw error;
     }

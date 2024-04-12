@@ -245,23 +245,199 @@ export function Pending() {
       </div>
       <div className="schedule-cards lg:grid-cols-3 pt-2 grid">
         <div className="h-[54vh] flex flex-col gap-2 overflow-y-scroll">
-          {scheduleType.pending.map((schedule: ScheduleProps) => (
-            <PendingCard
-              key={schedule.id}
-              pacientId={schedule.patientId}
-              procedureId={schedule.procedureId}
-            />
-          ))}
+          {scheduleType.pending
+            .filter((schedule) => {
+              const professionalMatch =
+                selectProfessional === "all" ||
+                schedule.professionalId === selectProfessional;
+              const procedureMatch =
+                selectedProcedure === "all" ||
+                schedule.procedureId === selectedProcedure;
+              const nameMatch =
+                searchName === "" ||
+                patient?.some((patient: any) =>
+                  patient.full_name
+                    ?.toLowerCase()
+                    .includes(searchName.toLowerCase())
+                );
+              const planMatch =
+                searchPlan === "" ||
+                patient?.some((patient: any) => patient.role === searchPlan);
+              const dateMatch =
+                searchDate === "" || schedule.date.includes(searchDate);
+
+              return (
+                professionalMatch &&
+                procedureMatch &&
+                nameMatch &&
+                planMatch &&
+                dateMatch
+              );
+            })
+            .map((schedule: ScheduleProps) => (
+              <PendingCard
+                key={schedule.id}
+                setPatient={setPatient}
+                pacientId={schedule.patientId}
+                procedureId={schedule.procedureId}
+              />
+            ))}
+          {scheduleType.pending.filter((schedule) => {
+            const professionalMatch =
+              selectProfessional === "all" ||
+              schedule.professionalId === selectProfessional;
+            const procedureMatch =
+              selectedProcedure === "all" ||
+              schedule.procedureId === selectedProcedure;
+            const nameMatch =
+              searchName === "" ||
+              patient?.some((patient: any) =>
+                patient.full_name
+                  ?.toLowerCase()
+                  .includes(searchName.toLowerCase())
+              );
+            const planMatch =
+              searchPlan === "" ||
+              patient?.some((patient: any) => patient.role === searchPlan);
+            const dateMatch =
+              searchDate === "" || schedule.date.includes(searchDate);
+
+            return (
+              professionalMatch &&
+              procedureMatch &&
+              nameMatch &&
+              planMatch &&
+              dateMatch
+            );
+          }).length === 0 && (
+            <p className="text-center text-primary">
+              {selectProfessional !== "all" &&
+                scheduleType.cancelled.some(
+                  (schedule) => schedule.professionalId === selectProfessional
+                ) === false &&
+                `Nenhum agendamento pendente encontrado para este profissional.`}
+              {selectedProcedure !== "all" &&
+                scheduleType.cancelled.some(
+                  (schedule) => schedule.procedureId === selectedProcedure
+                ) === false &&
+                `Nenhum agendamento pendente encontrado para este procedimento.`}
+              {searchName !== "" &&
+                patient?.some((patient: any) =>
+                  patient.full_name
+                    ?.toLowerCase()
+                    .includes(searchName.toLowerCase())
+                ) === false &&
+                `Nenhum paciente encontrado com o nome ${searchName} em agendamentos pendentes.`}
+              {searchPlan !== "" &&
+                patient?.some((patient: any) => patient.role === searchPlan) ===
+                  false &&
+                `Nenhum paciente encontrado com ete plano em agendamentos pendentes.`}
+              {searchDate !== "" &&
+                scheduleType.cancelled.some((schedule) =>
+                  schedule.date.includes(searchDate)
+                ) === false &&
+                `Nenhum agendamento pendente encontrado para esta data.`}
+            </p>
+          )}
         </div>
+
         <div className="h-[54vh] flex flex-col gap-2 overflow-y-scroll">
-          {scheduleType.cancelled.map((schedule: ScheduleProps) => (
-            <PendingCard
-              key={schedule.id}
-              pacientId={schedule.patientId}
-              procedureId={schedule.procedureId}
-            />
-          ))}
+          {scheduleType.cancelled
+            .filter((schedule) => {
+              const professionalMatch =
+                selectProfessional === "all" ||
+                schedule.professionalId === selectProfessional;
+              const procedureMatch =
+                selectedProcedure === "all" ||
+                schedule.procedureId === selectedProcedure;
+              const nameMatch =
+                searchName === "" ||
+                patient?.some((patient: any) =>
+                  patient.full_name
+                    ?.toLowerCase()
+                    .includes(searchName.toLowerCase())
+                );
+              const planMatch =
+                searchPlan === "" ||
+                patient?.some((patient: any) => patient.role === searchPlan);
+              const dateMatch =
+                searchDate === "" || schedule.date.includes(searchDate);
+
+              return (
+                professionalMatch &&
+                procedureMatch &&
+                nameMatch &&
+                planMatch &&
+                dateMatch
+              );
+            })
+            .map((schedule: ScheduleProps) => (
+              <PendingCard
+                key={schedule.id}
+                setPatient={setPatient}
+                pacientId={schedule.patientId}
+                procedureId={schedule.procedureId}
+              />
+            ))}
+          {scheduleType.cancelled.filter((schedule) => {
+            const professionalMatch =
+              selectProfessional === "all" ||
+              schedule.professionalId === selectProfessional;
+            const procedureMatch =
+              selectedProcedure === "all" ||
+              schedule.procedureId === selectedProcedure;
+            const nameMatch =
+              searchName === "" ||
+              patient?.some((patient: any) =>
+                patient.full_name
+                  ?.toLowerCase()
+                  .includes(searchName.toLowerCase())
+              );
+            const planMatch =
+              searchPlan === "" ||
+              patient?.some((patient: any) => patient.role === searchPlan);
+            const dateMatch =
+              searchDate === "" || schedule.date.includes(searchDate);
+
+            return (
+              professionalMatch &&
+              procedureMatch &&
+              nameMatch &&
+              planMatch &&
+              dateMatch
+            );
+          }).length === 0 && (
+            <p className="text-center text-primary">
+              {selectProfessional !== "all" &&
+                scheduleType.cancelled.some(
+                  (schedule) => schedule.professionalId === selectProfessional
+                ) === false &&
+                `Nenhum agendamento cancelado encontrado para este profissional.`}
+              {selectedProcedure !== "all" &&
+                scheduleType.cancelled.some(
+                  (schedule) => schedule.procedureId === selectedProcedure
+                ) === false &&
+                `Nenhum agendamento cancelado encontrado para este procedimento.`}
+              {searchName !== "" &&
+                patient?.some((patient: any) =>
+                  patient.full_name
+                    ?.toLowerCase()
+                    .includes(searchName.toLowerCase())
+                ) === false &&
+                `Nenhum paciente encontrado com o nome ${searchName} em agendamentos cancelados.`}
+              {searchPlan !== "" &&
+                patient?.some((patient: any) => patient.role === searchPlan) ===
+                  false &&
+                `Nenhum paciente encontrado com este plano em agendamentos cancelados.`}
+              {searchDate !== "" &&
+                scheduleType.cancelled.some((schedule) =>
+                  schedule.date.includes(searchDate)
+                ) === false &&
+                `Nenhum agendamento cancelado encontrado para esta data.`}
+            </p>
+          )}
         </div>
+
         <div className="h-[54vh] flex flex-col gap-2 overflow-y-scroll">
           {scheduleType.finished
             .filter((schedule) => {
