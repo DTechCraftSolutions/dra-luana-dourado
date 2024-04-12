@@ -14,11 +14,13 @@ interface FinishedScheduleProps {
   date: string;
   procedureId: string;
   pacientId: string;
+  setPatient: any;
 }
 export function FinishedSchedule({
   date,
   procedureId,
   pacientId,
+  setPatient,
 }: FinishedScheduleProps) {
   const [dataProcedure, setDataProcedure] = useState<any>([]);
   const [dataPacient, setDataPacient] = useState<any>([]);
@@ -57,6 +59,7 @@ export function FinishedSchedule({
       );
       const data = await response.json();
       setDataPacient(data.patient);
+      setPatient([data.patient]);
     } catch (error) {
       throw error;
     }
