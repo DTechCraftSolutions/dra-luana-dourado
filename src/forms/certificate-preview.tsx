@@ -21,11 +21,11 @@ const CertificatePreview = ({ certificateType, date, disease, patient, dentist, 
         <div className="text-sm mt-5">
           <div className="mt-10">
             <div>
-              <p>Nome do paciente: {patient.full_name}</p>
+              <p><span className="font-bold">Nome do paciente:</span> {patient.full_name}</p>
             </div>
           </div>
           <p>
-            <span className="font-bold">Tipo de Atestado</span>: {certificateType === "1" ? "Comparecimento ao consultório odontológico" : "Dias"}
+            <span className="font-bold">Tipo de Atestado</span>: {certificateType === "1" ? "Comparecimento ao consultório odontológico" : `${daysAmount} dias`}
           </p>
           <p>
             <span className="font-bold">Data de emissão</span>: {date}

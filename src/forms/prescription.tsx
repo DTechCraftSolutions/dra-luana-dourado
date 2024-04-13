@@ -42,21 +42,21 @@ export function Prescription({ setDocSelected, selectedPatient }: prescriptionPr
 
     async function getProfile() {
         try {
-          const token = Cookies.get("token");
-          const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/profile-professionals`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-          const data = await response.json();
-          setDataProfile(data.professionals);
+            const token = Cookies.get("token");
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL}/profile-professionals`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            const data = await response.json();
+            setDataProfile(data.professionals);
         } catch (error) {
-          console.log(error);
+            console.log(error);
         }
-      }
+    }
 
     const onInputChange = (
         event: React.FormEvent,
@@ -68,7 +68,7 @@ export function Prescription({ setDocSelected, selectedPatient }: prescriptionPr
 
     useEffect(() => {
         getProfile();
-    },[])
+    }, [])
     const onSuggestionSelected = (
         event: React.FormEvent,
         { suggestion }: Autosuggest.SuggestionSelectedEventData<Medicine>
@@ -89,6 +89,23 @@ export function Prescription({ setDocSelected, selectedPatient }: prescriptionPr
     };
     const handleAdd = (e: FormEvent) => {
         e.preventDefault();
+
+        const alreadyAdded = medicineList.find((item) => item.nome === selectedMedicine?.nome);
+
+        if (alreadyAdded) {
+            medicineList.map((item) => {
+                if (item.nome === selectedMedicine?.nome) {
+                    item.quantity += quantityToAdd;
+                }
+            })
+            setInputValue("");
+            setSelectedMedicine(null);
+            setQuantityToAdd(1);
+            setMeasureInForm("Caixa(s)");
+            setNewPosologia('')
+            return
+        }
+
         if (selectedMedicine && quantityToAdd > 0 && measureInForm) {
             setMedicineList([...medicineList, { ...selectedMedicine, quantity: quantityToAdd, measure: measureInForm, posologia: newPosologia }]);
             setInputValue("");
@@ -179,7 +196,7 @@ export function Prescription({ setDocSelected, selectedPatient }: prescriptionPr
                             </button>
                         </form>
                         <div className="w-3/5">
-                            <div id="printable-content" className="w-full h-[90vh] bg-white  flex justify-between flex-col rounded-lg p-2 px-8 mb-10">
+                            <div id="printable-content" className="w-full min-h-[90vh] bg-white  flex justify-between flex-col rounded-lg p-2 px-8 mb-10">
                                 <div>
                                     <div className="flex items-center gap-4">
                                         <Image src={details.image} alt="logo" className="mt-4" width={150} height={100} />
@@ -248,7 +265,7 @@ export function Prescription({ setDocSelected, selectedPatient }: prescriptionPr
                                         ))
                                     }
                                 </div>
-                                <div className="text-sm flex flex-col items-center">
+                                <div className="text-sm flex pt-24 flex-col items-center">
                                     <div className="w-3/5 mx-auto h-[0.5px] bg-zinc-700">
 
                                     </div>

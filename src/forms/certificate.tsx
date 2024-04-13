@@ -132,7 +132,7 @@ const Certificate = ({ setDocSelected, selectedPatient }: CertificateProps) => {
           </div>
         </div>
         <div className="hidden">
-          <CertificatePreview dentist={dataProfile} patient={selectedPatient} certificateType={certificateType} date={date} disease={disease} />
+          <CertificatePreview daysAmount={daysAmount} dentist={dataProfile} patient={selectedPatient} certificateType={certificateType} date={date} disease={disease} />
         </div>
       </div>
     </div>
