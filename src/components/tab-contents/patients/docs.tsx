@@ -32,7 +32,7 @@ export function DocsComponent({patient}: any) {
                 docSelected === "prescription" && <Prescription selectedPatient={patient} setDocSelected={setDocSelected} />
             }
             {
-                docSelected === "certificate" && <Certificate setDocSelected={setDocSelected} />
+                docSelected === "certificate" && <Certificate selectedPatient={patient} setDocSelected={setDocSelected} />
             }
 
         </div>
