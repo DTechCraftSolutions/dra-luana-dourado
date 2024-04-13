@@ -101,7 +101,7 @@ const PatientDetailTabs = ({
       />
       <TabContent tabId="tab2-budget" content={<BudgetsRender />} />
       <TabContent tabId="tab3-treatment" content={<Treatments />} />
-      <TabContent tabId="tab4-docs" content={<DocsComponent />} />
+      <TabContent tabId="tab4-docs" content={<DocsComponent patient={patient} />} />
     </div>
   );
 };

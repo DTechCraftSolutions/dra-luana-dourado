@@ -5,7 +5,7 @@ import { FaFileMedical, FaFilePrescription } from "react-icons/fa";
 import Certificate from "@/forms/certificate";
 
 
-export function DocsComponent() {
+export function DocsComponent({patient}: any) {
     const [docSelected, setDocSelected] = useState<string>()
     return (
         <div>
@@ -29,7 +29,7 @@ export function DocsComponent() {
                 )
             }
             {
-                docSelected === "prescription" && <Prescription setDocSelected={setDocSelected} />
+                docSelected === "prescription" && <Prescription selectedPatient={patient} setDocSelected={setDocSelected} />
             }
             {
                 docSelected === "certificate" && <Certificate setDocSelected={setDocSelected} />

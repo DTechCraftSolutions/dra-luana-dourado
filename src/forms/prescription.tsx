@@ -6,13 +6,22 @@ import Autosuggest from "react-autosuggest"
 import Image from "next/image";
 import { details } from "../../details";
 import { format, set } from "date-fns";
+import ReactToPrint from 'react-to-print';
+import Cookies from "js-cookie";
+import { PatientProps } from "@/app/routes/pages/patients";
 
 interface Medicine {
     nome: string;
     posologia: string;
 }
 
-export function Prescription({ setDocSelected }: any) {
+
+interface prescriptionProps {
+    setDocSelected: any;
+    selectedPatient: PatientProps;
+}
+
+export function Prescription({ setDocSelected, selectedPatient }: prescriptionProps) {
     const [newPrescription, setNewPrescription] = useState(false);
     const [measureInForm, setMeasureInForm] = useState<string>("Caixa(s)");
     const [inputValue, setInputValue] = useState('');
@@ -20,14 +29,34 @@ export function Prescription({ setDocSelected }: any) {
     const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(null);
     const [medicineList, setMedicineList] = useState<any[]>([]);
     const [quantityToAdd, setQuantityToAdd] = useState(1);
+    const [newPosologia, setNewPosologia] = useState('');
+    const [dataProfile, setDataProfile] = useState<any>();
 
     const inputRef = useRef<HTMLTextAreaElement>(null);
 
     useEffect(() => {
         if (selectedMedicine && inputRef.current) {
-            inputRef.current.value = selectedMedicine.posologia;
+            setNewPosologia(selectedMedicine.posologia);
         }
     }, [selectedMedicine]);
+
+    async function getProfile() {
+        try {
+          const token = Cookies.get("token");
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/profile-professionals`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          const data = await response.json();
+          setDataProfile(data.professionals);
+        } catch (error) {
+          console.log(error);
+        }
+      }
 
     const onInputChange = (
         event: React.FormEvent,
@@ -36,6 +65,10 @@ export function Prescription({ setDocSelected }: any) {
         setInputValue(newValue);
     };
 
+
+    useEffect(() => {
+        getProfile();
+    },[])
     const onSuggestionSelected = (
         event: React.FormEvent,
         { suggestion }: Autosuggest.SuggestionSelectedEventData<Medicine>
@@ -57,11 +90,12 @@ export function Prescription({ setDocSelected }: any) {
     const handleAdd = (e: FormEvent) => {
         e.preventDefault();
         if (selectedMedicine && quantityToAdd > 0 && measureInForm) {
-            setMedicineList([...medicineList, { ...selectedMedicine, quantity: quantityToAdd, measure: measureInForm }]);
+            setMedicineList([...medicineList, { ...selectedMedicine, quantity: quantityToAdd, measure: measureInForm, posologia: newPosologia }]);
             setInputValue("");
             setSelectedMedicine(null);
             setQuantityToAdd(1);
             setMeasureInForm("Caixa(s)");
+            setNewPosologia('');
 
         }
     }
@@ -131,6 +165,8 @@ export function Prescription({ setDocSelected }: any) {
                             <div>
                                 <label htmlFor="">Posologia</label>
                                 <textarea
+                                    onChange={(e) => setNewPosologia(e.target.value)}
+                                    value={newPosologia}
                                     id="posologia"
                                     ref={inputRef}
                                     placeholder="Adicione..."
@@ -142,84 +178,93 @@ export function Prescription({ setDocSelected }: any) {
                                 Adicionar
                             </button>
                         </form>
-                        <div className="w-3/5 h-[90vh] bg-white shadow-md flex justify-between flex-col rounded-lg p-2 px-8 mb-10">
-                            <div>
-                                <div className="flex items-center gap-4">
-                                    <Image src={details.image} alt="logo" className="mt-4" width={150} height={100} />
-                                    <div className="text-sm flex w-full flex-col gap-2">
-                                        <p>Nome do dentista</p>
-                                        <p className="flex gap-2">
+                        <div className="w-3/5">
+                            <div id="printable-content" className="w-full h-[90vh] bg-white  flex justify-between flex-col rounded-lg p-2 px-8 mb-10">
+                                <div>
+                                    <div className="flex items-center gap-4">
+                                        <Image src={details.image} alt="logo" className="mt-4" width={150} height={100} />
+                                        <div className="text-sm flex w-full flex-col gap-2">
+                                            <p>{dataProfile.name}</p>
+                                            <p className="flex gap-2">
+                                                <span className="font-bold">
+                                                    CRO
+                                                </span>
+                                                {dataProfile.CRO}
+                                            </p>
+                                        </div>
+                                        <ReactToPrint
+                                            trigger={() => (
+                                                <div className="not-printable">
+                                                    <button className="bg-primary fixed-right text-white flex items-center text-sm gap-2 px-5 py-2 rounded-full hover:opacity-80 hover:duration-1000 hover:ease-out">
+                                                        <IoPrint />
+                                                        Imprimir
+                                                    </button>
+                                                </div>
+                                            )}
+                                            content={() => document.getElementById('printable-content')!}
+                                        />
+                                    </div>
+                                    <h2 className="text-center w-full font-medium">Receita</h2>
+                                    <div className="text-sm mt-5">
+                                        <p>
                                             <span className="font-bold">
-                                                CRO
-                                            </span>
-                                            7777777777
+                                                Paciente
+                                            </span>: {selectedPatient.full_name}
+                                        </p>
+                                        <p>
+                                            Endereço: {selectedPatient.road}, {selectedPatient.neighborhood}, {selectedPatient.number}, {selectedPatient.city} - {selectedPatient.state}
                                         </p>
                                     </div>
-                                    <button className="bg-primary fixed-right text-white flex items-center text-sm gap-2 px-5 py-2 rounded-full hover:opacity-80 hover:duration-1000 hover:ease-out">
-                                        <IoPrint />
-                                        Imprimir
-                                    </button>
-                                </div>
-                                <h2 className="text-center w-full font-medium">Receita</h2>
-                                <div className="text-sm mt-5">
-                                    <p>
-                                        <span className="font-bold">
-                                            Paciente
-                                        </span>: Nome do paciente
-                                    </p>
-                                    <p>
-                                        Rua da minha casa, juá, 16, Limoeiro - PE
-                                    </p>
-                                </div>
-                                {
-                                    medicineList.length > 0 && medicineList.map((medicine, index) => (
-                                        <div className="mt-5 text-sm">
-                                            <button onClick={() => {
-                                                const newList = medicineList.filter((medicine) => {
-                                                    return medicine.nome !== medicineList[index].nome
-                                                })
-                                                setMedicineList(newList)
-                                            }} className="float-right rounded-full justify-center items-center ml-2 bg-red-500 text-white">
-                                                <IoClose />
-                                            </button>
-                                            <div className="flex items-center justify-between">
-                                                <p className="font-bold">
-                                                    {medicine.nome}
-                                                </p>
-                                                <div className="flex items-center gap-2">
-                                                    <p>
-                                                        {medicine.quantity}
+                                    {
+                                        medicineList.length > 0 && medicineList.map((medicine, index) => (
+                                            <div className="mt-5 text-sm">
+                                                <button onClick={() => {
+                                                    const newList = medicineList.filter((medicine) => {
+                                                        return medicine.nome !== medicineList[index].nome
+                                                    })
+                                                    setMedicineList(newList)
+                                                }} className="float-right not-printable rounded-full justify-center items-center ml-2 bg-red-500 text-white">
+                                                    <IoClose />
+                                                </button>
+                                                <div className="flex items-center justify-between">
+                                                    <p className="font-bold">
+                                                        {medicine.nome}
                                                     </p>
+                                                    <div className="flex items-center gap-2">
+                                                        <p>
+                                                            {medicine.quantity}
+                                                        </p>
+                                                        <p>
+                                                            {medicine.measure}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div>
                                                     <p>
-                                                        {medicine.measure}
+                                                        {medicine.posologia}
                                                     </p>
                                                 </div>
                                             </div>
-                                            <div>
-                                                <p>
-                                                    {medicine.posologia}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    ))
-                                }
-                            </div>
-                            <div className="text-sm flex flex-col items-center">
-                                <div className="w-3/5 mx-auto h-[0.5px] bg-zinc-700">
+                                        ))
+                                    }
+                                </div>
+                                <div className="text-sm flex flex-col items-center">
+                                    <div className="w-3/5 mx-auto h-[0.5px] bg-zinc-700">
 
+                                    </div>
+                                    <div>
+                                        <p>{dataProfile.name} CRO {dataProfile.CRO}</p>
+                                    </div>
+                                    <div>
+                                        {format(new Date(), "dd/MM/yyyy")}
+                                    </div>
                                 </div>
-                                <div>
-                                    <p>Nome do dentista CRO 777777777</p>
-                                </div>
-                                <div>
-                                    {format(new Date(), "dd/MM/yyyy")}
-                                </div>
-
                             </div>
                         </div>
+
                     </div>
                 )
             }
         </div>
     )
-} 
+}

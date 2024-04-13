@@ -96,3 +96,9 @@
   background-color: #79b3ea;
 
 }
+
+@media print {
+  .not-printable {
+      display: none;
+  }
+}
