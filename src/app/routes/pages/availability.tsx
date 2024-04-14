@@ -33,6 +33,12 @@ export function AvailabilityManagement() {
 
   const [availableTimes, setAvailableTimes] = useState<AvailableProps[]>([]);
   const [data, setData] = useState<any>([]);
+  const [dayOfWeekforCheck, setDayOfWeekforCheck] = useState("");
+  const [newIntervalCheck, setNewIntervalCheck] = useState({
+    start: "",
+    end: "",
+  });
+  const [added, setAdded] = useState(false);
   const [professionalId, setProfessionalId] = useState("");
   const [availability, setAvailability] = useState<Availability>({
     Segunda: [],
@@ -50,6 +56,9 @@ export function AvailabilityManagement() {
       ...prevAvailability,
       [day]: [...prevAvailability[day], newInterval],
     }));
+    setNewIntervalCheck(newInterval);
+    setDayOfWeekforCheck(daysToWeeks[day]);
+    setAdded((prev) => !prev);
   };
 
   const handleRemoveInterval = (day: string, index: number) => {
@@ -121,7 +130,7 @@ export function AvailabilityManagement() {
       toast.error("Erro ao remover disponibilidade");
     } finally {
       handleRemoveInterval(day, index);
-      findAllAvailability();
+      setAdded(false);
     }
   }
   async function getIdProfessional() {
@@ -143,10 +152,68 @@ export function AvailabilityManagement() {
       console.error("Error fetching professional profile:", error);
     }
   }
+  function checkAvailabilityConflicts(
+    newAvailability: any,
+    existingAvailabilities: any[]
+  ): boolean {
+    const dayOfWeek = dayOfWeekforCheck;
+    const professionalId = newAvailability.professionalId;
+
+    const existingAvailabilitiesForDayAndProfessional =
+      existingAvailabilities.filter(
+        (avail) =>
+          avail.day_of_week === dayOfWeek &&
+          avail.professionalId === professionalId
+      );
+
+    const newStartTime = convertToMinutes(newIntervalCheck.start);
+    const newEndTime = convertToMinutes(newIntervalCheck.end);
+
+    for (const existingAvailability of existingAvailabilitiesForDayAndProfessional) {
+      const existingStartTime = convertToMinutes(
+        existingAvailability.initial_time
+      );
+      const existingEndTime = convertToMinutes(existingAvailability.end_time);
+
+      if (
+        (newStartTime >= existingStartTime && newStartTime < existingEndTime) ||
+        (newEndTime > existingStartTime && newEndTime <= existingEndTime) ||
+        (existingStartTime >= newStartTime && existingStartTime < newEndTime) ||
+        (existingEndTime > newStartTime && existingEndTime <= newEndTime)
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  function convertToMinutes(time: any) {
+    const [hours, minutes] = time.split(":").map(Number);
+    return hours * 60 + minutes;
+  }
 
   function handleAddAvailability() {
     try {
       if (data.length > 0) {
+        const conflicts = data.some((newAvailability: any) =>
+          checkAvailabilityConflicts(newAvailability, availableTimes)
+        );
+
+        if (conflicts) {
+          toast.warning(
+            "Os horários conflitam com os já existentes. Por favor, ajuste."
+          );
+          return;
+        }
+        if (
+          data.some(
+            (item: any) => item.initial_time === "" || item.end_time === ""
+          )
+        ) {
+          toast.warning("Adicone pelo menos um horário");
+          return;
+        }
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/register-available-times`, {
           method: "POST",
           headers: {
@@ -157,15 +224,14 @@ export function AvailabilityManagement() {
           }),
         }).then(() => {
           findAllAvailability();
+          toast.success("Disponibilidade registrada com sucesso");
+          setAdded((prev) => !prev);
         });
-
-        toast.success("Disponibilidade registrada com sucesso");
-      }
-      if (data.length === 0) {
-        toast.warning("Por favor, preencha o campo de disponibilidade");
       }
     } catch (error) {
+      toast.error("Erro ao registrar disponibilidade");
       console.error(error);
+      setAdded((prev) => !prev);
     } finally {
       setData([]);
     }
@@ -223,6 +289,7 @@ export function AvailabilityManagement() {
   useEffect(() => {
     const data = dateFormat();
     setData(data);
+    console.log("dados:", data);
   }, [availability]);
 
   useEffect(() => {
@@ -298,8 +365,13 @@ export function AvailabilityManagement() {
                     </div>
                   ))}
                   <button
+                    disabled={added}
                     onClick={() => handleAddInterval(day)}
-                    className="bg-primary text-white px-2 py-2 rounded-full hover:bg-blue-600 transition-colors flex items-center justify-center w-40 gap-2"
+                    className={`${
+                      added === true
+                        ? "bg-primary/50 cursor-not-allowed"
+                        : "bg-primary"
+                    } bg-primary text-white px-2 py-2 rounded-full hover:bg-blue-600 transition-colors flex items-center justify-center w-40 gap-2`}
                   >
                     <IoAdd /> Adicionar
                   </button>
