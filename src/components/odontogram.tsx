@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { number } from "zod";
+import { number, object } from "zod";
 import { set } from "date-fns";
 
 
@@ -16,9 +16,10 @@ interface DenteProps {
     numero: number;
     setDetails: Dispatch<SetStateAction<FaceProps[] | undefined>>
     details: FaceProps[] | [];
+    procedures: any[];
 }
 
-const Dente: React.FC<DenteProps> = ({ numero, setDetails, details = [] }) => {
+const Dente: React.FC<DenteProps> = ({ numero, setDetails, details = [], procedures }) => {
     const [modalAberto, setModalAberto] = useState(false);
     const [tooth, setTooth] = useState({
         M: "",
@@ -36,11 +37,19 @@ const Dente: React.FC<DenteProps> = ({ numero, setDetails, details = [] }) => {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
+        Object.keys(tooth).map((key) => {
+            tooth[key] !== "" && procedures.find((procedure) => {
+                if (procedure.id === tooth[key]) {
+                    tooth[key] = procedure
+                }
+            })
+        })
         details.length > 0 ? details.map((detail) => {
             if (detail.numero === numero) {
+                
                 const newTooth = { ...tooth, numero };
                 const detailsWithoutDente = details.filter((detail) => detail.numero !== numero);
+
                 setDetails([...detailsWithoutDente, newTooth]);
                 return
             }
@@ -73,7 +82,7 @@ const Dente: React.FC<DenteProps> = ({ numero, setDetails, details = [] }) => {
                                             <p className="bg-primary flex justify-center items-center ml-2 w-6 h-6 rounded-full text-white">
                                                 {face}
                                             </p>
-                                            
+
                                             <Select value={tooth[face]} onValueChange={(value) => {
                                                 setTooth({ ...tooth, [face]: value });
                                             }}>
@@ -81,8 +90,11 @@ const Dente: React.FC<DenteProps> = ({ numero, setDetails, details = [] }) => {
                                                     <SelectValue placeholder="Selecione um procedimento" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value={`123123`}>Procedimento {index + 1}</SelectItem>
-                                                    <SelectItem value={`232423`}>Procedimento {index + 2}</SelectItem>
+                                                    {procedures.map((procedure) => (
+                                                        <SelectItem key={procedure.id} value={procedure.id}>
+                                                            {procedure.name}
+                                                        </SelectItem>
+                                                    ))}
                                                 </SelectContent>
                                             </Select>
                                         </div>
@@ -111,16 +123,38 @@ const Dente: React.FC<DenteProps> = ({ numero, setDetails, details = [] }) => {
 
 
 const Odontograma: React.FC<DenteProps> = ({ setDetails, details }) => {
+
+    const procedures = [
+        {
+            id: "1",
+            name: 'Extração',
+            description: 'Exxtração',
+            price: 100
+        },
+        {
+            id: "2",
+            name: 'limpeza',
+            description: 'limpeza',
+            price: 100
+        },
+        {
+            id: "3",
+            name: 'obturação',
+            description: 'obturação',
+            price: 100
+        }
+    ]
+
     return (
         <div className="flex flex-col items-center">
             <div className="flex flex-wrap justify-center space-x-4">
                 {[...Array(16)].map((_, index) => (
-                    <Dente setDetails={setDetails} details={details} key={index} numero={index + 1} />
+                    <Dente procedures={procedures} setDetails={setDetails} details={details} key={index} numero={index + 1} />
                 ))}
             </div>
             <div className="flex flex-wrap justify-center space-x-4">
                 {[...Array(16)].map((_, index) => (
-                    <Dente setDetails={setDetails} details={details} key={index + 16} numero={32 - index} />
+                    <Dente procedures={procedures} setDetails={setDetails} details={details} key={index + 16} numero={32 - index} />
                 ))}
             </div>
         </div>

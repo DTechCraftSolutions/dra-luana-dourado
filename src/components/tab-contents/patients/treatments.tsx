@@ -6,7 +6,7 @@ import { DialogFooter, DialogHeader } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "../../ui/dialog";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoAdd, IoClose, IoPrint } from "react-icons/io5";
 
 
@@ -14,6 +14,29 @@ import { IoAdd, IoClose, IoPrint } from "react-icons/io5";
 export function Treatments() {
     const [newTreatment, setNewTreatment] = useState(false);
     const [faceDetails, setFaceDetails] = useState<FaceProps[]>()
+    const [totalValue, setTotalValue] = useState(0)
+    console.log(faceDetails)
+
+    const showTotalValue = () => {
+        let values: number[] = []
+        faceDetails?.map((face) => {
+            Object.keys(face).map((key) => {
+                if (face[key] !== "") {
+                    values.push(face[key].price)
+                }
+            })
+        })
+        console.log({ values })
+        values.map((value) => {
+            if (value) {
+                setTotalValue(totalValue + value)
+            }
+        })
+    }
+
+    useEffect(() => {
+        showTotalValue()
+    }, [faceDetails])
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="col-span-2">
@@ -53,7 +76,7 @@ export function Treatments() {
                                 <label className="text-primary" htmlFor="">
                                     Valor R$
                                 </label>
-                                <input disabled value="250,00" type="text" className="w-full border px-2 border-primary h-10 rounded-full bg-transparent focus:outline-primary" />
+                                <input disabled value={totalValue} type="text" className="w-full border px-2 border-primary h-10 rounded-full bg-transparent focus:outline-primary" />
                             </div>
                         </div>
                         <div className="my-4">
@@ -61,13 +84,13 @@ export function Treatments() {
                         </div>
                         <div className="flex justify-between">
                             <Button
-                            onClick={() => setNewTreatment(false)}
-                            className="bg-zinc-300 hover:opacity-90 hover:bg-zinc-300 hover:duration-500 hover:ease-in-out text-primary mt-4 rounded-full">
+                                onClick={() => setNewTreatment(false)}
+                                className="bg-zinc-300 hover:opacity-90 hover:bg-zinc-300 hover:duration-500 hover:ease-in-out text-primary mt-4 rounded-full">
                                 <IoClose className="text-2xl" />
                                 Cancelar
                             </Button>
                             <Button
-                             className="bg-green-600 hover:opacity-90 hover:bg-green-600 hover:duration-500 hover:ease-in-out text-white mt-4 rounded-full">
+                                className="bg-green-600 hover:opacity-90 hover:bg-green-600 hover:duration-500 hover:ease-in-out text-white mt-4 rounded-full">
                                 <IoAdd className="text-2xl" />
                                 Adicionar
                             </Button>
