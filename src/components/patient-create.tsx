@@ -165,7 +165,7 @@ export function PatientCreate({
     useState(false);
   async function handleCreatePatient(data: PatientSchema) {
     try {
-      await fetch(`"${process.env.NEXT_PUBLIC_API_URL}/register-patient`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/register-patient`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
