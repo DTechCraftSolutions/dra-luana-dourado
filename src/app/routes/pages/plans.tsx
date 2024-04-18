@@ -9,6 +9,70 @@ import { IoAdd } from "react-icons/io5";
 import Cookies from "js-cookie";
 import { TreatmentItem } from "@/components/treatment-item";
 import { PlanCard } from "@/components/plan-card";
+import { set } from "date-fns";
+
+const list = [
+    {
+        id: "1",
+        name: "Clareamento",
+        description: "Descrição do clareamento",
+        recurrence: "Recorrência do clareamento",
+        price: 100.00,
+        professionalId: "id_do_profissional",
+        duration: "30",
+        color: "#FFFFFF"
+    },
+    {
+        id: "2",
+        name: "Limpeza",
+        description: "Descrição da limpeza",
+        recurrence: "Recorrência da limpeza",
+        price: 100.00,
+        professionalId: "id_do_profissional",
+        duration: "30",
+        color: "#FFFFFF"
+    },
+    {
+        id: "3",
+        name: "Obturação",
+        description: "Descrição da obturação",
+        recurrence: "Recorrência da obturação",
+        price: 100.00,
+        professionalId: "id_do_profissional",
+        duration: "30",
+        color: "#FFFFFF"
+    },
+    {
+        id: "4",
+        name: "Cirurgia",
+        description: "Descrição da cirurgia",
+        recurrence: "Recorrência da cirurgia",
+        price: 100.00,
+        professionalId: "id_do_profissional",
+        duration: "30",
+        color: "#FFFFFF"
+    },
+    {
+        id: "5",
+        name: "Ortodontia",
+        description: "Descrição da ortodontia",
+        recurrence: "Recorrência da ortodontia",
+        price: 100.00,
+        professionalId: "id_do_profissional",
+        duration: "30",
+        color: "#FFFFFF"
+    },
+    {
+        id: "6",
+        name: "Extração",
+        description: "Descrição da extração",
+        recurrence: "Recorrência da extração",
+        price: 100.00,
+        professionalId: "id_do_profissional",
+        duration: "30",
+        color: "#FFFFFF"
+    }
+];
 
 interface OrthodonticPlanProps {
     id: string;
@@ -29,17 +93,22 @@ export function Plans() {
     const [description, setDescription] = useState("");
     const [price, setPrice] = useState(0);
     const [durationMonths, setDurationMonths] = useState(0);
-    const [treatments, setTreatments] = useState<string[]>([]);
-    const [discounts, setDiscounts] = useState("");
-    const [isActive, setIsActive] = useState(true);
-    const [color, setColor] = useState("");
-    const [image, setImage] = useState("");
+    const [procedures, setProcedures] = useState<{
+        id: string;
+        name: string;
+        description: string;
+        recurrence: string;
+        price: number;
+        professionalId: string;
+        duration: string;
+        color: string;
+    }[]>(list);
+    const [proceduresByPlan, setProceduresByPlan] = useState<any[]>([]);
     const [openRegister, setOpenRegister] = useState(false);
     const [edit, setEdit] = useState(false);
     const [currentPlanSelected, setCurrentPlanSelected] = useState<any>({});
     const [orthodonticPlans, setOrthodonticPlans] = useState<OrthodonticPlanProps[]>([]);
     const [search, setSearch] = useState("");
-    const [treatmentsList, setTreatmentsList] = useState<string[]>([]);
     const [openTreatmentModal, setOpenTreatmentModal] = useState(false);
 
     const plans = [
@@ -56,31 +125,24 @@ export function Plans() {
             name: "Santander"
         }
     ]
+    console.log({proceduresByPlan, procedures});
 
-    const list = [
-        "Limpeza",
-        "Extração de dente",
-        "Tratamento de canal",
-        "Instalação de aparelho",
-        "Clareamento dental",
-        "Restauração de dente",
-        "Ortodontia",
-        "Implante dentário",
-        "Prótese dentária",
-        "Check-up odontológico",
-    ];
+    function addIsActiveInProcudure(){
+        procedures.map((procedure) => {
+         return setProceduresByPlan([...proceduresByPlan, {...procedure, isActive: "S"}]);
+        })
+    }
 
+    useEffect(() => {
+        addIsActiveInProcudure()
+    },[])
 
     function clearFields() {
         setName("");
         setDescription("");
         setPrice(0);
         setDurationMonths(0);
-        setTreatments([]);
-        setDiscounts("");
-        setIsActive(true);
-        setColor("");
-        setImage("");
+        setProcedures([]);
         setEdit(false);
     }
 
@@ -97,6 +159,7 @@ export function Plans() {
         } finally {
             clearFields();
             setOpenRegister(false);
+            console.log(proceduresByPlan);
         }
     }
 
@@ -116,7 +179,7 @@ export function Plans() {
 
     async function deletePlan(plan: OrthodonticPlanProps) {
         try {
-            // Lógica para excluir o plano ortodôntico
+
             toast.success("Plano ortodôntico excluído com sucesso");
         } catch (error) {
             toast.error("Erro ao excluir o plano ortodôntico");
@@ -209,9 +272,31 @@ export function Plans() {
                     </DialogHeader>
                     <DialogDescription className="max-h-[500px]">
                         <div className="max-h-[400px] overflow-y-scroll ">
-                            {list.map((treatment, index) => (
-                                <TreatmentItem key={index} name={treatment} />
-                            ))}
+                            {list.map((procedure, index) => {
+                                const active = proceduresByPlan.find((p) => p.id === procedure.id)?.isActive;
+                                const selectedPrice = proceduresByPlan.find((p) => p.id === procedure.id)?.price;
+                                return (
+                                    <TreatmentItem
+                                        isActive={active}
+                                        key={index}
+                                        name={procedure.name}
+                                        id={procedure.id}
+                                        setPrice={(e: number) => {
+                                            const procedureSelected = proceduresByPlan.find((p) => p.id === procedure.id);
+                                            if (procedureSelected) {
+                                                setProceduresByPlan([...proceduresByPlan.filter((p) => p.id !== procedure.id), { ...procedureSelected, price: Number(e) }]);
+                                            }
+                                        }}
+                                        price={selectedPrice}
+                                        setIsActive={() => {
+                                            const procedureSelected = proceduresByPlan.find((p) => p.id === procedure.id);
+                                            if (procedureSelected) {
+                                                setProceduresByPlan([...proceduresByPlan.filter((p) => p.id !== procedure.id), { ...procedureSelected, isActive: procedureSelected.isActive === "S" ? "N" : "S" }]);
+                                            }
+                                        }}
+                                    />
+                                )
+                            })}
                         </div>
                     </DialogDescription>
                     <div className="flex gap-4 w-full justify-center">
