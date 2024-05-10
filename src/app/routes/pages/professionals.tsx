@@ -252,20 +252,24 @@ export function Professionals() {
           </h2>
           <p className="mt-4">Selecione um para mais detalhes</p>
           <div className="flex flex-col gap-2 mt-4">
-            {professionals &&
+          <Table>
+          <TableCaption>{professionals.length} Profissionais encontrados</TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[300px]">Nome</TableHead>
+              <TableHead>Cargo</TableHead>
+              </TableRow>
+          </TableHeader>
+          <TableBody>
+          {professionals &&
               professionals.map((professional, index) => (
-                <button onClick={() => setSelectedProfessional(professional)}>
-                  <RegisteredProfessionals
-                    key={index}
-                    name={professional.name}
-                    job={
-                      professional.office === "DENTIST"
-                        ? "Dentista"
-                        : "Secretaria"
-                    }
-                  />
-                </button>
+                <TableRow onClick={() => setSelectedProfessional(professional)} className="hover:bg-primary hover:opacity-90 hover:text-white duration-300 hover:cursor-pointer">
+                  <TableCell className="w-[300px]">{professional.name}</TableCell>
+                  <TableCell>{professional.office === "DENTIST" ? "Dentista" : "Secretário (a)"}</TableCell>
+                </TableRow>
               ))}
+          </TableBody>
+          </Table>
           </div>
         </>
       )}

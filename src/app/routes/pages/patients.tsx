@@ -6,6 +6,7 @@ import PatientDetailTabs from "@/components/patient-details-tab";
 import { PatientCreate } from "@/components/patient-create";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export interface PatientProps {
   id: string;
@@ -158,19 +159,38 @@ export function Patients() {
 
           {data.length > 0 ? (
             <div className="w-full flex flex-col gap-2 mt-5">
-              {data
+              <Table>
+                <TableCaption>
+                  {patientSearchList.length} Paciente{patientSearchList.length > 1 && "s"}
+                </TableCaption>
+                <TableRow>
+                  <TableHeader  className="flex justify-between">
+                    <TableHead>
+                      Nome
+                    </TableHead>
+                    <TableHead className="">
+                      Telefone
+                    </TableHead>
+                  </TableHeader>
+                </TableRow>
+                <TableBody>
+                {data
                 .filter((patient) =>
                   patient.full_name.toLowerCase().includes(search.toLowerCase())
                 )
                 .map((patient) => (
-                  <PatientSearchedCard
-                    telephone={patient.telephone}
-                    key={patient.id}
-                    name={patient.full_name}
-                    id={patient.id}
-                    handleSelectPatient={handleSelectPatient}
-                  />
+                  <TableRow className="cursor-pointer hover:bg-primary justify-between w-full hover:text-white hover:opacity-90 duration-300" onClick={() => handleSelectPatient(patient.id)}>
+                    <TableCell className="w-[60%]">
+                      {patient.full_name}
+                    </TableCell>
+                    <TableCell className="">
+                      {patient.telephone}
+                    </TableCell>
+                  </TableRow>
                 ))}
+                </TableBody>
+              </Table>
+              {/*  */}
               {data.filter((patient) =>
                 patient.full_name.toLowerCase().includes(search.toLowerCase())
               ).length === 0 && (

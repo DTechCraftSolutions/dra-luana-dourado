@@ -1,6 +1,4 @@
-// components/ui/PlanCard.tsx
 import React from "react";
-import { Button } from "./ui/button";
 import { IoPencil, IoTrash } from "react-icons/io5";
 
 interface PlanCardProps {
@@ -12,17 +10,19 @@ interface PlanCardProps {
 export const PlanCard: React.FC<PlanCardProps> = ({ name, onEdit, onDelete }) => {
     return (
         <div className="border rounded-xl shadow-md w-[90%] bg-white p-4 mb-4 flex justify-between items-center">
-            <div className="text-lg font-semibold">{name}</div>
-            <div className="flex gap-4">
-                {/* Botão de editar com ícone */}
-                <Button variant="outline" onClick={onEdit}>
-                    <IoPencil />
-                </Button>
-                {/* Botão de deletar com ícone */}
-                <Button className="" onClick={onDelete}>
-                    <IoTrash />
-                </Button>
-            </div>
+            <p className="text-lg text-primary font-semibold">{name}</p>
+            <div className="flex items-center gap-2">
+          <button
+            className="flex items-center gap-2 text-primary hover:bg-primary hover:text-white hover:duration-500 hover:ease-in-out hover:transform hover:rounded"
+          >
+            <IoPencil />
+          </button>
+          <button
+            className="flex items-center gap-2 text-red-500 hover:bg-red-500 hover:text-white hover:duration-500 hover:ease-in-out hover:transform hover:rounded"
+          >
+            <IoTrash />
+          </button>
+        </div>
         </div>
     );
 };
