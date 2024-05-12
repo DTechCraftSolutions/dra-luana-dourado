@@ -13,11 +13,13 @@ export const PlanCard: React.FC<PlanCardProps> = ({ name, onEdit, onDelete }) =>
             <p className="text-lg text-primary font-semibold">{name}</p>
             <div className="flex items-center gap-2">
           <button
+            onClick={onEdit}
             className="flex items-center gap-2 text-primary hover:bg-primary hover:text-white hover:duration-500 hover:ease-in-out hover:transform hover:rounded"
           >
             <IoPencil />
           </button>
           <button
+            onClick={onDelete}
             className="flex items-center gap-2 text-red-500 hover:bg-red-500 hover:text-white hover:duration-500 hover:ease-in-out hover:transform hover:rounded"
           >
             <IoTrash />

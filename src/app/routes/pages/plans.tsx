@@ -66,7 +66,12 @@ export function Plans() {
   const [currentPlanSelected, setCurrentPlanSelected] = useState<any>({});
   const [search, setSearch] = useState("");
   const [openTreatmentModal, setOpenTreatmentModal] = useState(false);
-
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [planToDelete, setPlanToDelete] = useState<OrthodonticPlanProps>();
+  const [planToEdit, setPlanToEdit] = useState<OrthodonticPlanProps>();
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editDuration, setEditDuration] = useState(0);
   async function getAllPlans() {
     try {
       const response = await fetch(
@@ -344,8 +349,17 @@ export function Plans() {
               <PlanCard
                 key={plan.id}
                 name={plan.name}
-                onEdit={() => {}}
-                onDelete={() => {}}
+                onEdit={() => {
+                  setEditDuration(plan.duration);
+                  setEditName(plan.name);
+                  setOpenEditModal(true);
+                  setPlanToEdit(plan);
+                }}
+
+                onDelete={() => {
+                  setPlanToDelete(plan);
+                  setOpenDeleteModal(true);
+                }}
               />
             ))
         )}
@@ -361,6 +375,120 @@ export function Plans() {
             </div>
           )}
       </div>
+      <Dialog open={openDeleteModal} onOpenChange={setOpenDeleteModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Excluir plano</DialogTitle>
+          </DialogHeader>
+          <DialogDescription>
+            Tem certeza que deseja excluir o plano?
+          </DialogDescription>
+          <div className="flex gap-4 w-full justify-center">
+            <Button
+              variant="outline"
+              className="rounded-full"
+              onClick={() => setOpenDeleteModal(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              className="rounded-full bg-red-500 hover:bg-red-500 hover:bg-opacity-90"
+              onClick={() => {
+                deletePlan(planToDelete as any);
+                setOpenDeleteModal(false);
+              }}
+            >
+              Excluir
+            </Button>
+          </div>
+
+        </DialogContent>
+      </Dialog>
+      <Dialog open={openEditModal} onOpenChange={setOpenEditModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar plano</DialogTitle>
+          </DialogHeader>
+          <DialogDescription>
+            <div className="grid grid-cols-2 gap-4 mb-5">
+              <div>
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium leading-6 text-primary"
+                >
+                  Nome
+                </label>
+                <div className="mt-2">
+                  <input
+                    className="block w-full rounded-full px-4 text-black  border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
+                    type="text"
+                    id="name"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div>
+                <label
+                  htmlFor="duration"
+                  className="block text-sm font-medium leading-6 text-primary"
+                >
+                  Duração (meses)
+                </label>
+                <div className="mt-2">
+                  <input
+                    className="block w-full rounded-full px-4 text-black  border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
+                    type="number"
+                    id="duration"
+                    value={editDuration}
+                    onChange={(e) => setEditDuration(Number(e.target.value))}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="max-h-[400px] overflow-y-scroll ">
+              {procedures.map((procedure, index) => {
+                const priceProcedure = procedure.price;
+                return (
+                  <TreatmentItem
+                    isActive={active}
+                    setActive={setActive}
+                    setProcedureUpdate={setActualizedProcedure as any}
+                    updateProcedure={actualizedProcedure}
+                    key={index}
+                    name={procedure.name}
+                    price={price}
+                    priceProcedure={priceProcedure}
+                    procedureByPlan={proceduresByPlan}
+                    setProcedureByPlan={setProceduresByPlan}
+                    setPrice={setPrice}
+                  />
+                );
+              })}
+            </div>
+          </DialogDescription>
+          <div className="flex gap-4 w-full justify-center">
+            <Button
+              variant="outline"
+              className="rounded-full"
+              onClick={() => {
+                setOpenEditModal(false);
+              }}
+            >
+              Fechar
+            </Button>
+            <Button
+              className="rounded-full"
+              onClick={() => {
+                setOpenEditModal(false);
+              }}
+            >
+              Editar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
